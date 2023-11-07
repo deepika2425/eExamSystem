@@ -1,0 +1,35 @@
+{% extends "MainLayout.html" %}
+
+{% block title %} Add-Branch {% endblock %}
+{% block head %} {% endblock %}
+
+{% block content%}
+
+<form method="post">
+  <input type="hidden" name="Id" value="{{EditDt._id}}">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Add Branch</h4>
+              <div class="form-group">
+                <div class="row">
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="Branch_name">Branch Name</label>
+                    <input type="text" class="form-control" name="branchname" id="Branch_name" placeholder="Branch Name" required  value="{{EditDt.Bname}}">
+                 </div>
+                 
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="Branch_Code">Branch Code</label>
+                    <input type="text" class="form-control" name="branchcode" id="Branch_Code" placeholder="Branchs Code" required value="{{EditDt.Bcode}}">
+                 </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary mr-2">Submit</button>
+          </div>
+        </div>
+      </div>
+</form>
+
+{% endblock %} 
+
+{% block Scripts %} {% endblock %} 

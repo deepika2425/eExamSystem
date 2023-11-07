@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>{% block Poptitle %}{% endblock %} - eExamSystem</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="{{url_for('static', filename='home/feather/feather.css')}}">
+  <link rel="stylesheet" href="{{url_for('static', filename='home/ti-icons/css/themify-icons.css')}}">
+  <link rel="stylesheet" href="{{url_for('static', filename='home/css/vendor.bundle.base.css')}}">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <link rel="stylesheet" href="{{url_for('static', filename='home/datatables.net-bs4/dataTables.bootstrap4.css')}}">
+  <link rel="stylesheet" href="{{url_for('static', filename='home/ti-icons/css/themify-icons.css')}}">
+  <link rel="stylesheet" href="{{url_for('static', filename='home/css/select.dataTables.min.css')}}">
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="{{url_for('static', filename='home/vertical-layout-light/style.css')}}">
+  <!-- endinject -->
+  <!-- custom:css -->
+  <link rel="stylesheet" href="{{url_for('static', filename='home/css/custom_popup.css')}}">
+  <!-- custom -->
+  <link rel="shortcut icon" href="{{url_for('static', filename='home/images/eexam.png')}}" type="image/x-icon">
+  {% block Pophead %}
+  {% endblock %}
+
+</head>
+<body>
+  <div class="container-scroller">
+    <div class="container-fluid">
+      <!-- partial:partials/_settings-panel.html -->
+        <div class="content-wrapper">
+          {% block PopContent%}
+          <!-- content Body -->
+          {% endblock %} 
+      </div>
+      <!-- main-panel ends -->
+    </div>   
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+
+  <!-- plugins:js -->
+  <script src="{{url_for('static', filename='home/js/jquery-3.6.1.min.js')}}"></script>
+  <script src="{{url_for('static', filename='home/js/vendor.bundle.base.js')}}"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <script src="{{url_for('static', filename='home/chart.js/Chart.min.js')}}"></script>
+  <script src="{{url_for('static', filename='home/datatables.net/jquery.dataTables.js')}}"></script>
+ <script src="{{url_for('static', filename='home/datatables.net-bs4/dataTables.bootstrap4.js')}}"></script>
+  <script src="{{url_for('static', filename='home/js/dataTables.select.min.js')}}"></script>
+
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="{{url_for('static', filename='home/js/off-canvas.js')}}"></script>
+  <script src="{{url_for('static', filename='home/js/hoverable-collapse.js')}}"></script>
+  <script src="{{url_for('static', filename='home/js/template.js')}}"></script>
+  <script src="{{url_for('static', filename='home/js/settings.js')}}"></script>
+  <script src="{{url_for('static', filename='home/js/todolist.js')}}"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page-->
+  <script src="{{url_for('static', filename='home/js/dashboard.js')}}"></script>
+  <script src="{{url_for('static', filename='home/js/Chart.roundedBarCharts.js')}}"></script> 
+  <script src="{{url_for('static', filename='home/js/custom_popup.js')}}"></script> 
+  <!-- End custom js for this page-->
+
+  {% block PopScripts %}
+      
+  {% endblock %} 
+
+</body>
+
+</html>
+

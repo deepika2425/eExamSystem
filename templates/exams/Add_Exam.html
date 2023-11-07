@@ -1,0 +1,194 @@
+{% extends "MainLayout.html" %}
+
+{% block title %} Add-Exam {% endblock %}
+{% block head %} {% endblock %}
+
+{% block content%}
+<form method="post">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Add Exam</h4>
+              <div class="form-group">
+                <div class="row">
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="SBranch">Select Branch</label>
+                    <select name="Branch" id="SBranch" class="form-control">
+                        <option value="0">Choose One</option>
+                            {% for item in BranDt %}
+                                <option value="{{item.Bname}}">{{item.Bname}}</option>
+                            {% endfor %}
+                    </select>
+                 </div>
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="SSubject">Select Subject</label>
+                    <select name="Subject" id="SSubject" class="form-control" disabled>
+                        <option value="0">Choose One</option>
+                        {% for item in SubjectDb %}
+                        <option value="{{item.SubTitel}}">{{item.SubTitel}}</option>
+                        {% endfor %}
+                    </select>
+                 </div>
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="QSP_Code">Question Paper Code</label>
+                    <input type="text" class="form-control" name="QSPCode" id="QSP_Code" placeholder="Question Paper Code" required disabled>
+                 </div>
+                </div>
+              </div>
+              <div id="AddQuestion">
+                <div class="AQBtnArea text-right">
+                    <label class="mr-2">Add Question <em style="font-size: 12px;" class="ti-angle-right"></em></label>
+                    <button type="button" class="AQBtn"><em class="ti-plus"></em></button>
+                </div>
+             </div>
+            </div>
+             
+             
+              <!-- <button type="submit" class="btn btn-primary mr-2">Submit</button> -->
+          </div>
+        </div>
+      </div>
+</form>
+{% endblock %} 
+
+{% block Scripts %} 
+<script>
+    $(document).ready(()=>{
+        $("#SBranch").change((e)=>{
+            if (e.currentTarget.value != ""){
+                $.get(`?Branch=${e.currentTarget.value}`,(result)=>{
+                    $("#SSubject option").not($("#SSubject option")[0]).remove();
+                    $(result).each((ResIndex,ResObj)=>{
+                        $("#SSubject").append(`<option value="${ResObj.SubTitel}">${ResObj.SubTitel}</option>`)
+                        $("#SSubject").removeAttr("disabled")
+
+                    })
+                })
+            }else{
+                $("#SSubject").attr("disabled","disabled");
+                $("#SSubject option").not($("#SSubject option")[0]).remove();
+                $("#QSP_Code").attr("disabled","disabled");
+                $("#QSP_Code").val("");
+                $("#AddQuestion").hide();
+                $("#NewQuestionArea,.Qustions,.QustionsOpt,.QsSub").remove() ;
+            }
+        })
+        $("#SSubject").change((e)=>{
+            if (e.currentTarget.value != "0"){
+               $("#QSP_Code").removeAttr("disabled")
+            }else{
+                $("#QSP_Code").attr("disabled","disabled");
+                $("#QSP_Code").val("");
+                $("#AddQuestion").hide()
+                $("#NewQuestionArea,.Qustions,.QustionsOpt,.QsSub").remove() ;
+            }
+        });
+        $("#QSP_Code").keyup((event)=>{
+            event.currentTarget.value != "" ? $("#AddQuestion").show() : $("#AddQuestion").hide();
+            event.currentTarget.value == "" ? $("#NewQuestionArea,.Qustions,.QustionsOpt,.QsSub").remove() : "" ;
+        })
+        $(".AQBtn").click(()=>{
+            if($(".card-body #NewQuestionArea").length > 0){
+                alert("Plz Submit Your Currrent Question")
+            }
+            else{
+                let QsOptHtml = `<div id="NewQuestionArea" class="form-group">
+                                 <div class="QsOptArea row mb-2">
+                                     <button type="button" class="SubjectiveBtn btn btn-primary ml-5">Subjective</button>
+                                     <button type="button" class="ObjectiveBtn btn btn-behance ml-2">Objective</button>
+                                 </div>
+                                 <div class="SolidLn"></div>
+                              </div>`
+                $("#AddQuestion").after(QsOptHtml)
+
+                $(".ObjectiveBtn").click(()=>{
+                   
+                        $(".QuestionArea").remove();
+                    
+                        let QsHtml = `<div class="QuestionArea">
+                                     <div class="Qustions form-group">
+                                        <div class="row">
+                                          <div class="col-md-12 col-sm-12 col-xs-12">
+                                              <label for="MQs">Your Question</label>
+                                              <textarea class="form-control" name="Question" id="MQs" placeholder="Your Question" required style="width:100%;height: 100px;"></textarea>
+                                           </div>
+                                        </div>
+                                      </div>
+                                      <div class="QustionsOpt form-group">
+                                        <div class="row">
+                                            <div class="col-md-3 col-sm-3 col-xs-12">
+                                                <label for="Option_1">Option 1</label>
+                                                <div class="QsAnswarBlk"><input type="radio" name="QsAnswar" value="Option1" checked></div>
+                                                <input type="text" class="form-control" name="Option1" id="Option_1" placeholder="Option 1" required/>
+                                             </div>
+                                             <div class="col-md-3 col-sm-3 col-xs-12">
+                                                <label for="Option_2">Option 2</label>
+                                                <div class="QsAnswarBlk"><input type="radio" name="QsAnswar" value="Option2"></div>
+                                                <input type="text" class="form-control" name="Option2" id="Option_2" placeholder="Option 2" required/>
+                                             </div>
+                                             <div class="col-md-3 col-sm-3 col-xs-12">
+                                                <label for="Option_3">Option 3</label>
+                                                <div class="QsAnswarBlk"><input type="radio" name="QsAnswar" value="Option3"></div>
+                                                <input type="text" class="form-control" name="Option3" id="Option_3" placeholder="Option 3" required/>
+                                             </div>
+                                             <div class="col-md-3 col-sm-3 col-xs-12">
+                                                <label for="Option_4">Option 4</label>
+                                                <div class="QsAnswarBlk"><input type="radio" name="QsAnswar" value="Option4"></div>
+                                                <input type="text" class="form-control" name="Option4" id="Option_4" placeholder="Option 4" required/>
+                                             </div>
+                                        </div>
+                                    </div>
+                                    <div class="QsSub form-group">
+                                        <div class="text-center">
+                                            <button type="button" id="AddQsBtn" class="btn btn-linkedin" onclick="QsFormSubmit()">Submit</button>
+                                            <input type="hidden" name="QsType" value="Subjective"/>
+                                        </div>
+                                    </div>
+                                </div>`
+                        $("#NewQuestionArea").after(QsHtml)
+                
+                })
+                $(".SubjectiveBtn").click(()=>{
+
+                        $(".QuestionArea").remove();
+                   
+                        let QsHtml = `<div class="QuestionArea">
+                                       <div class="Qustions form-group">
+                                        <div class="row">
+                                          <div class="col-md-12 col-sm-12 col-xs-12">
+                                              <label for="MQs">Your Question</label>
+                                              <textarea class="form-control" name="Question" id="MQs" placeholder="Your Question" required style="width:100%;height: 100px;"></textarea>
+                                           </div>
+                                        </div>
+                                      </div>
+                                    <div class="QsSub form-group">
+                                        <div class="text-center">
+                                            <button type="button" id="AddQsBtn" class="btn btn-linkedin" onclick="QsFormSubmit()">Submit</button>
+                                            <input type="hidden" name="QsType" value="Objective"/>
+                                        </div>
+                                    </div>
+                                </div>`
+                        $("#NewQuestionArea").after(QsHtml)
+                    
+                })
+            }
+        })
+    })
+    function QsFormSubmit(){
+        let Page_IsValid = true;
+        $("#SBranch,#SSubject,#QSP_Code,#MQs,#Option_1,#Option_2,#Option_3,#Option_4").each((LIndex,LObj)=>{
+           if(LObj.value.trim() == "" ){
+             Page_IsValid = false
+             return Page_IsValid
+           }
+        })
+        if(Page_IsValid){
+            $.post(window.location.href,$("form").serialize(),(result)=>{
+                $(".Qustions,.QustionsOpt,.QsSub").remove() ;
+            })
+        }else{
+            alert('Plz fill all the field')
+        }
+    }
+</script>
+{% endblock %} 

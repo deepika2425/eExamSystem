@@ -1,0 +1,71 @@
+{% extends "MainLayout.html" %}
+
+{% block title %} Edit Faculty{% endblock %}
+{% block head %} {% endblock %}
+
+{% block content%}
+
+<form method="post" autocomplete="off">
+  <input type="hidden" name="Id" value="{{EditDt._id}}">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Edit</h4>
+              <div class="form-group">
+                <div class="row">
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" name="fname" id="name" placeholder="Name" autocomplete="off" value="{{EditDt.name}}">
+                 </div>
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="Email_Id">Email Id</label>
+                    <input type="email" class="form-control" name="femail" id="Email_Id" placeholder="Email Id" autocomplete="off"  value="{{EditDt.email}}">
+                 </div>
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="User_Id">User Id</label>
+                    <input type="text" class="form-control" name="fid" id="User_Id" placeholder="User Id" autocomplete="off" value="{{EditDt.user_id}}">
+                 </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="row">
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="Gender">Gender</label>
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="fgender" value="Male" id="Gender" {{ 'checked' if EditDt.gender == "Male"}}/>
+                            Male
+                          <i class="input-helper"></i></label>
+                        </div>
+                      </div>
+                      <div class="col-sm-6">
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="fgender" value="Female" id="Gender" {{ 'checked' if EditDt.gender == "Female"}} />
+                            Female
+                          <i class="input-helper"></i></label>
+                        </div>
+                      </div>
+                    </div>
+                 </div>
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="Password">Password</label>
+                    <input type="text" class="form-control" name="fpassword" id="Password" placeholder="Password" autocomplete="off" value="{{EditDt.password}}">
+                 </div>
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="Your_image">Your image</label>
+                    <input type="file" class="form-control" name="fimage" id="Your_image" accept="image/*" autocomplete="off" value="{{EditDt.image}}">
+                 </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary mr-2">Submit</button>
+          </div>
+        </div>
+      </div>
+</form>
+
+{% endblock %} 
+
+{% block Scripts %} {% endblock %} 

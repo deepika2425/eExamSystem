@@ -1,0 +1,70 @@
+{% extends "MainLayout.html" %}
+
+{% block title %} Add-Faculty {% endblock %}
+{% block head %} {% endblock %}
+
+{% block content%}
+
+<form method="post"  enctype=multipart/form-data>
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Add Faculty</h4>
+              <div class="form-group">
+                <div class="row">
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" name="fname" id="name" placeholder="Name" required>
+                 </div>
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="Email_Id">Email Id</label>
+                    <input type="email" class="form-control" name="femail" id="Email_Id" placeholder="Email Id" required >
+                 </div>
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="User_Id">User Id</label>
+                    <input type="text" class="form-control" name="fid" id="User_Id" placeholder="User Id" required>
+                 </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="row">
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="Gender">Gender</label>
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="fgender" value="Male" id="Gender" checked>
+                            Male
+                          <i class="input-helper"></i></label>
+                        </div>
+                      </div>
+                      <div class="col-sm-6">
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="fgender" value="Female" id="Gender" >
+                            Female
+                          <i class="input-helper"></i></label>
+                        </div>
+                      </div>
+                    </div>
+                 </div>
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="Password">Password</label>
+                    <input type="text" class="form-control" name="fpassword" id="Password" placeholder="Password" required>
+                 </div>
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="Your_image">Your image</label>
+                    <input type="file" class="form-control" name="fimage" id="Your_image" accept="image/*" required>
+                 </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary mr-2">Submit</button>
+          </div>
+        </div>
+      </div>
+</form>
+
+{% endblock %} 
+
+{% block Scripts %} {% endblock %} 

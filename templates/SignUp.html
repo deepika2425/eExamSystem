@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="/static/login/images/eexam.png" type="image/x-icon">
+    <link rel="stylesheet" href="/static/login/fonts/icomoon/style.css">
+
+    <link rel="stylesheet" href="/static/login/css/owl.carousel.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/static/login/css/bootstrap.min.css">
+    
+    <!-- Style -->
+    <link rel="stylesheet" href="/static/login/css/login.css">
+
+    <title>Eexam system - SignUp</title>
+  </head>
+  <body>
+    <div class="titlehead">
+        <div class="Cmptitle">
+          <img src="/static/login/images/eexam.png" />
+            <label>Eexam system</label>
+        </div>
+      </div>
+      <div class="content">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6">
+              <img src="/static/login/images/undraw_remotely_2j6y.svg" alt="Image" class="img-fluid">
+            </div>
+            <div class="col-md-6 contents">
+              <div class="row justify-content-center">
+                <div class="col-md-8">
+                  <div class="mb-4">
+                    {% if error %}
+                       <p class="valerror">{{error}}</p>
+                    {% endif %}
+                  <h3>New here?</h3>
+                  <p style="color: cadetblue;">Signing up is easy. It only takes a few steps</p>
+                </div>
+    <form method="post" enctype=multipart/form-data>
+      <div class="form-group first">
+        <label for="user_name" class="form-label">Name</label>
+        <input type="text" class="form-control" id="user_name" name="username" aria-describedby="username" required>
+      </div>
+      <div class="form-group mt-2">
+        <label for="SEmail" class="form-label">Email Id</label>
+        <input type="email" class="form-control" name="email" id="SEmail" required>
+      </div>
+      <div class="form-group mt-2">
+        <label for="user_id" class="form-label">User Id</label>
+        <input type="text" class="form-control" name="userid" id="user_id" required>
+      </div>
+      <div class="form-group mt-2 chckbox">
+        <label  class="form-label" style="position: unset;">Gender</label>
+        
+        <div class="form-check" style="position: unset;">
+            <input class="form-check-input" type="radio" value="Male" name="gender" id="gender1" checked>
+            <label class="form-check-label" for="gender1" style="top: 39px;">
+              Male
+            </label>
+          </div>
+          <div class="form-check" style="position: unset;margin-left: 4rem!important;">
+            <input class="form-check-input" type="radio" value="Female" name="gender" id="gender2" >
+            <label class="form-check-label" for="gender2" style="top: 39px;">
+              Female
+            </label>
+          </div>
+         
+      </div>
+      <div class="form-group mt-2">
+        <label for="Spassword" class="form-label">Password</label>
+        <input type="text" class="form-control" name="password" id="Spassword" required>
+      </div>
+      <div class="form-group last mt-2 mb-4 chckbox">
+        <label for="Spassword" class="form-label" style="position: unset;">Your image</label>
+        <div class="form-check" style="position: unset;">
+        <input type="file" name="file" id="Simage" accept="image/*" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Sign Up</button>
+      <a href="/login" class="float-right mt-3">Already have an account !</a>
+    </form>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>
+
+
+<script src="/static/login/js/jquery-3.3.1.min.js"></script>
+<script src="/static/login/js/popper.min.js"></script>
+<script src="/static/login/js/bootstrap.min.js"></script>
+<script src="/static/login/js/main.js"></script>
+</body>
+</html>

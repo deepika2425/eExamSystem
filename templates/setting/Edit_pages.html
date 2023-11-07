@@ -1,0 +1,83 @@
+{% extends "PopupLayout.html" %}
+
+{% block Poptitle %} Edit-Pages {% endblock %}
+{% block Pophead %} {% endblock %}
+
+  {% block PopContent%}
+  {% if EpBindData %}
+  <form method="post">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+              <div class="form-group">
+                <div class="row">
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="Page_Order">Page Order</label>
+                    <input type="number" class="form-control" name="PageOrder" id="Page_Order" placeholder="Page Order" value="{{EpBindData.PageOrder}}">
+                 </div>
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="Page_Titel">Page Titel</label>
+                    <input type="text" class="form-control" name="PageTitel" id="Page_Titel" placeholder="Page Titel" value="{{EpBindData.PageTitel}}">
+                 </div>
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="Page_Icon">Page Icon</label>
+                    <input type="text" class="form-control" name="PageIcon" id="Page_Icon" placeholder="Page Icon" value="{{EpBindData.PageIcon}}">
+                 </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="row">
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="Page_Status">Page Status</label>
+                    <div class="row">
+                       {% if EpBindData.PageStatus == "Active" %}
+                       <div class="col-sm-6">
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="PageStatus" value="Active" id="Page_Status" checked>
+                            Active
+                          <i class="input-helper"></i></label>
+                        </div>
+                      </div>
+                      <div class="col-sm-6">
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="PageStatus" value="InActive" id="Page_Status" >
+                            In Active
+                          <i class="input-helper"></i></label>
+                        </div>
+                      </div>
+                       {% else %}
+                       <div class="col-sm-6">
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="PageStatus" value="Active" id="Page_Status" >
+                            Active
+                          <i class="input-helper"></i></label>
+                        </div>
+                      </div>
+                      <div class="col-sm-6">
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="PageStatus" value="InActive" id="Page_Status" checked>
+                            In Active
+                          <i class="input-helper"></i></label>
+                        </div>
+                      </div>
+                       {% endif %}
+                    </div>
+                 </div>
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="Page_Url">Page Url</label>
+                    <input type="text" class="form-control" name="PageUrl" id="Page_Url" placeholder="Page Url" value="{{EpBindData.PageUrl}}">
+                 </div>
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+  </form>
+      {% endif %}
+  {% endblock %} 
+
+{% block PopScripts %} {% endblock %} 

@@ -1,0 +1,58 @@
+{% extends "MainLayout.html" %}
+
+{% block title %} SubPage {% endblock %}
+{% block head %} {% endblock %}
+
+{% block content%}
+<form method="post">
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex">
+          <h4 class="card-title col-6">Sub Pages</h4>
+          <div class="card_lefthead col-6 text-right"><a href="/setting/add_subpage?parent_page={{PaPage}}">Add SubPage</a></div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover NTable">
+                <thead>
+                  <tr>
+                    <th>Page Titel</th>
+                    <th>Page Icon</th>
+                    <th>Page Status</th>
+                    <th>Page Url</th>
+                    <th>Page Order</th>
+                    <th>Action</th>
+                    <th>Update Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+               {% if SubMenuJson %}
+                   {% for item in SubMenuJson %}
+                      {% if item.PageType == "Second" %}
+                          <tr>
+                            <td>{{item.PageTitel}}</td>
+                            <td>{{item.PageIcon}}</td>
+                            <td>{{item.PageStatus}}</td>
+                            <td>{{item.PageUrl}}</td>
+                            <td>{{item.PageOrder}}</td>
+                            <td>
+                              <div>
+                                <button onclick="UpdateModal('PageTitel:{{item.PageTitel}},PageIcon:{{item.PageIcon}},PageStatus:{{item.PageStatus}},PageUrl:{{item.PageUrl}},PageOrder:{{item.PageOrder}}','/setting/Edit_pages')" class="C_Icon_Btn Update" type="button"><em class="ti-write C_Icon"></em></button>
+                                <button onclick="DeleteModal('PageTitel:{{item.PageTitel}},parent_page:{{item.ParentPage}}')" class="C_Icon_Btn Delete" type="button"><em class="ti-trash C_Icon"></em></button>
+                              </div>
+                            </td>
+                            <td>{{item.date}}</td>
+                          </tr>
+                      {% endif %}
+                   {% endfor %}
+               {% endif %}
+              </tbody>
+             </table>
+           </div>
+          </div>
+         </div>
+       </div>
+</form>
+{% endblock %} 
+    
+{% block Scripts %} {% endblock %} 

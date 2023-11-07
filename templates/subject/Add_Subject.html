@@ -1,0 +1,46 @@
+{% extends "MainLayout.html" %}
+
+{% block title %} Add-Subject {% endblock %}
+{% block head %} {% endblock %}
+
+{% block content%}
+
+<form method="post">
+  <div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Add Subject</h4>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-4 col-sm-4 col-xs-4">
+              <label for="Branch_name">Branch Name</label>
+              <select class="form-control" name="branchname" id="Branch_name" placeholder="Branch Name" required>
+                <option value="">Choose One</option>
+                {% if BranchDt %}
+                {% for item in BranchDt %}
+                <option value="{{item.Bname}}">{{item.Bname}}</option>
+                {% endfor %}
+                {% endif %}
+              </select>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4">
+              <label for="Subject_name">Subject Name</label>
+              <input type="text" class="form-control" name="subjectname" id="Subject_Name" placeholder="Subject Name"
+                required>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4">
+              <label for="Subject_Code">Subject Code</label>
+              <input type="text" class="form-control" name="subjectcode" id="Subject_Code" placeholder="Subject Code"
+                required>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary mr-2">Submit</button>
+      </div>
+    </div>
+  </div>
+</form>
+
+{% endblock %}
+
+{% block Scripts %} {% endblock %}
