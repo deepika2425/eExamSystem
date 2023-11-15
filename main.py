@@ -15,7 +15,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 *1024
 
 try:
-   client = MongoClient("mongodb+srveE://xamSystem:8yUZvK6Z95HNOeJs@eexam-system.f07qvqu.mongodb.net/test")
+   client = MongoClient("mongodb+srv://eExamSystem:8yUZvK6Z95HNOeJs@eexam-system.f07qvqu.mongodb.net/test")
    print("Mongo Connected successfully!!!")
 except:  
     print("Could not connect to MongoDB")
@@ -45,7 +45,7 @@ def context_processor():
                     SMdata.append(item)
        elif  session["userroll"] == "Faculty":
              AdMenu = LeftMenuDb.find()
-             FJson =['Setting',"Faculty List","Subjects","Papers","Exam"]
+             FJson =['Setting',"Faculty List","Subjects","Papers","Exam","Student List","Branches"]
              for item in AdMenu :
                 if item["PageTitel"] not in FJson :
                    if item["PageType"] == "First" :
@@ -54,7 +54,7 @@ def context_processor():
                     SMdata.append(item)
        else :
          AdMenu = LeftMenuDb.find()
-         FJson =['Setting',"Faculty List","Subjects","Papers","Student List","Add Subject","Add Exam","Add Notice","Schedule Exam"]
+         FJson =['Setting',"Faculty List","Subjects","Papers","Student List","Add Subject","Add Exam","Add Notice","Schedule Exam","Branches"]
          for item in AdMenu :
              if item["PageTitel"] not in FJson :
                 if item["PageType"] == "First" :
