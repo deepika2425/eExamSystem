@@ -6,44 +6,54 @@
 {% block content%}
 
 <div class="col-lg-12 grid-margin stretch-card">
-    <div class="card">
-      <div class="card-body">
-        <h4 class="card-title">Student</h4>
-        <div class="table-responsive">
-            <table class="table table-hover NTable">
-                <thead>
-                  <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Password</th>
-                    <th>Roll</th>
-                    <th>Gender</th>
-                    <th>Update Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-               {% if StudentJson %}
-                   {% for item in StudentJson %}
-                          <tr>
-                            <td>{{item.user_id}}</td>
-                            <td>{{item.name}}</td>
-                            <td>{{item.email}}</td>
-                            <td>{{item.password}}</td>
-                            <td>{{item.roll}}</td>
-                            <td>{{item.gender}}</td>
-                            <td>{{item.date}}</td>
-                            <td><a href="../updatestu?id={{item._id}}">Edit</a> </td>
-                            <td><a href="/student/students?dltId={{item._id}}">delete</a></td>
-                          </tr>
-                   {% endfor %}
-               {% endif %}
-              </tbody>
-             </table>
-           </div>
-          </div>
-         </div>
-       </div>
-{% endblock %} 
-    
-{% block Scripts %} {% endblock %}  
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Student</h4>
+      <div class="table-responsive">
+        <table class="table table-hover NTable">
+          <thead>
+            <tr>
+              <th>User Id</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Branch</th>
+              <th>Password</th>
+              <th>Roll</th>
+              <th>Gender</th>
+              <th>Update Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if StudentJson %}
+            {% for item in StudentJson %}
+            <tr>
+              <td>{{item.user_id}}</td>
+              <td>{{item.name}}</td>
+              <td>{{item.email}}</td>
+              <td>{{item.branch}}</td>
+              <td>{{item.password}}</td>
+              <td>{{item.roll}}</td>
+              <td>{{item.gender}}</td>
+              <td>{{item.date}}</td>
+              <td>
+                <a class="C_Icon_Btn Update" href="../updatestu?id={{item._id}}">
+                  <em class="ti-write C_Icon"></em>
+                </a>
+                |
+                <a onclick="ConfirmDelete('/student/students?dltId={{item._id}}')" class="C_Icon_Btn Delete" href="#">
+                  <em class="ti-trash C_Icon"></em>
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block Scripts %} {% endblock %}

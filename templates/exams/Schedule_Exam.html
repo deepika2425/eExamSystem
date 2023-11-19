@@ -4,148 +4,214 @@
 {% block head %} {% endblock %}
 
 {% block content%}
-{% if message %}
-  <label>{{message}}</label>
+{% if SuccessMsg %}
+<label>{{SucessMsg}}</label>
 {% endif %}
 <form method="post">
-<div class="col-lg-12 grid-margin stretch-card">
+  <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
         <h4 class="card-title">Schedule Exam</h4>
         <div class="form-group">
           <div class="row">
-           <div class="col-md-4 col-sm-4 col-xs-4">
+            <div class="col-md-4 col-sm-4 col-xs-4">
               <label for="SBranch">Select Branch</label>
-              <select name="Branch" id="SBranch" class="form-control">
-                  <option value="">Choose One</option>
-                      {% for item in BranDt %}
-                          <option value="{{item.Bname}}">{{item.Bname}}</option>
-                      {% endfor %}
-              </select>
-           </div>
-           <div class="col-md-4 col-sm-4 col-xs-4">
-              <label for="SSubject">Select Subject</label>
-              <select name="Subject" id="SSubject" class="form-control" disabled>
-                  <option value="">Choose One</option>
-              </select>
-           </div>
-           <div class="col-md-4 col-sm-4 col-xs-4">
-            <label for="SSubject">Paper Code</label>
-            <select name="PaperCode" id="PaperCode" class="form-control" disabled>
+              <select name="Branch" id="SBranch" class="form-control" required>
                 <option value="">Choose One</option>
-            </select>
-         </div>
+                {% for item in BranDt %}
+                <option value="{{item.Bname}}" {{'selected' if item.Bname==request.form["Branch"]}}>
+                  {{item.Bname}}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4">
+              <label for="SSubject">Select Subject</label>
+              <select name="Subject" id="SSubject" class="form-control" disabled required>
+                <option value="">Choose One</option>
+              </select>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4">
+              <label for="SSubject">Paper Code</label>
+              <select name="PaperCode" id="PaperCode" class="form-control" disabled required>
+                <option value="">Choose One</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="form-group mb-0">
           <div class="SolidLn"></div>
           <div class="row">
-           <div class="col-md-12 col-sm-12 col-xs-12 text-center">
-                <input type="submit" value="Search" id="SearchExam" class="btn btn-behance"/>
-           </div>
+            <div class="col-md-12 col-sm-12 col-xs-12 text-center">
+              <input type="submit" value="Search" id="SearchExam" class="btn btn-behance" />
+            </div>
           </div>
         </div>
-          </div>
-         </div>
-       </div>
-<div class="col-lg-12 grid-margin stretch-card">
+      </div>
+    </div>
+  </div>
+
+  <input type="hidden" name="QsCheckDt" id="QsHidden" />
+
+  {% if QsJson %}
+  <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
-         <div class="table-responsive">
-            <table class="table table-hover NTable">
-                <thead>
-                  <tr>
-                    <th>Branch</th>
-                    <th>Subject</th>
-                    <th>Paper Code</th>
-                    <th>Paper Status</th>
-                    <th>Schedule Time</th>
-                    <th>Update Date</th>
-                    <th>Action</th>
-                    <th>Sub Page</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% if QsJson %}
-                   {% for item in QsJson %}
-                          <tr>
-                            <td>{{item.Branch}}</td>
-                            <td>{{item.Subject}}</td>
-                            <td>{{item.QSPCode}}</td>
-                            <td>Status</td>
-                           
-                            <td><a href="../updatestu?id={{item._id}}">Edit</a> </td>
-                            <td><a href="/student/students?dltId={{item._id}}">delete</a></td>
-                          </tr>
-                   {% endfor %}
-               {% endif %}
-             <!--  {% if MenuJson %}
-                   {% for item in MenuJson %}
-                      {% if item.PageType == "First" %}
-                          <tr>
-                            <td>{{item.PageTitel}}</td>
-                            <td>{{item.PageIcon}}</td>
-                            <td>{{item.PageStatus}}</td>
-                            <td>{{item.PageUrl}}</td>
-                            <td>{{item.PageOrder}}</td>
-                            <td>{{item.date}}</td>
-                            <td>
-                              <div>
-                                <button onclick="UpdateModal('PageTitel:{{item.PageTitel}},PageIcon:{{item.PageIcon}},PageStatus:{{item.PageStatus}},PageUrl:{{item.PageUrl}},PageOrder:{{item.PageOrder}}','/setting/Edit_pages')" class="C_Icon_Btn Update" type="button"><em class="ti-write C_Icon"></em></button>
-                                <button onclick="DeleteModal('PageTitel:{{item.PageTitel}}')" class="C_Icon_Btn Delete" type="button"><em class="ti-trash C_Icon"></em></button>
-                              </div>
-                            </td>
-                            <td><a class="ti-arrow-right" href="/setting/sub_page?parent_page={{item.PageTitel}}"></a></td>
-                          </tr>
-                      {% endif %}
-                   {% endfor %}
-               {% endif %} -->
-              </tbody>
-             </table>
-           </div>
-      </div>
-     </div>
-   </div>
-</form>
-{% endblock %} 
-    
-{% block Scripts %} 
-  <script>
-    $(document).ready(()=>{
-       $("#SBranch").change((e)=>{
-            if (e.currentTarget.value != ""){
-                $.get(`?Branch=${e.currentTarget.value}`,(result)=>{
-                    $("#SSubject option").not($("#SSubject option")[0]).remove();
-                    $(result).each((ResIndex,ResObj)=>{
-                        $("#SSubject").append(`<option value="${ResObj.SubTitel}">${ResObj.SubTitel}</option>`)
-                        $("#SSubject").removeAttr("disabled")
+        <h4 class="card-title">Select Questions and Max Time</h4>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-4 col-sm-4 col-xs-4">
+              <label for="MHour">Select Hour</label>
+              <select name="MHour" id="MHour" class="form-control" required>
+                <option value="">Choose One</option>
+                {% for HCount in range(24) %}
+                {% if HCount < 10 %}
+                   <option value="0{{HCount}}">0{{HCount}}</option>
+                {% else %}
+                <option value="{{HCount}}">{{HCount}}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4">
+              <label for="MMinute">Select Minute</label>
+              <select name="MMinute" id="MMinute" class="form-control"  required>
+                <option value="">Choose One</option>
+                {% for MCount in range(60) %}
+                {% if MCount < 10 %}
+                   <option value="0{{MCount}}">0{{MCount}}</option>
+                {% else %}
+                <option value="{{MCount}}">{{MCount}}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4">
+              <label for="MSecond">Select Second</label>
+              <select name="MSecond" id="MSecond" class="form-control" required>
+                <option value="">Choose One</option>
+                {% for SCount in range(60) %}
+                {% if SCount < 10 %}
+                   <option value="0{{SCount}}">0{{SCount}}</option>
+                {% else %}
+                <option value="{{SCount}}">{{SCount}}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
 
-                    })
-                })
-            }else{
-                $("#SSubject").attr("disabled","disabled");
-                $("#SSubject option").not($("#SSubject option")[0]).remove();
-                $("#SCode").attr("disabled","disabled");
-                $("#SCode").val("");
-                $("#AddQuestion").hide();
-                $("#NewQuestionArea,.Qustions,.QustionsOpt,.QsSub").remove() ;
-            }
+        <div class="table-responsive">
+          <table class="table table-hover NTable QsTbl">
+            <thead>
+              <tr>
+                <th>Select</th>
+                <th>Branch</th>
+                <th>Subject</th>
+                <th>Category</th>
+                <th>Paper Code</th>
+                <th>Question Code</th>
+                <th>Created Date</th>
+                <th>Action</th>
+                
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in QsJson %}
+              <tr>
+                <td><input type="checkbox" class="QsCheck" value="{{item.QSCode}}"></td>
+                <td>{{item.Branch}}</td>
+                <td>{{item.Subject}}</td>
+                <td>{{item.QsCategory}}</td>
+                <td>{{item.QSPCode}}</td>
+                <td>{{item.QSCode}}</td>
+                <td>{{item.CreatedDate}}</td>
+                <td>
+                  <a class="C_Icon_Btn Update" href="/exams/add_exam?EditId={{item._id}}">
+                    <em class="ti-write C_Icon"></em>
+                  </a>
+                  |
+                  <a onclick="ConfirmDelete('/exams/schedule_exam?DltId={{item._id}}')" class="C_Icon_Btn Delete" href="#">
+                    <em class="ti-trash C_Icon"></em>
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="form-group mb-0">
+          <div class="SolidLn"></div>
+          <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12 text-center">
+              <input type="submit" value="Submit" id="SubmitQuestion" class="btn btn-behance" />
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</form>
+{% endblock %}
+
+{% block Scripts %}
+<script>
+  $(document).ready(() => {
+    if ($("#SBranch").val() != "") {
+      $.get(`?Branch=${$("#SBranch").val()}`, (result) => {
+        $(result).each((ResIndex, ResObj) => {
+          $("#SSubject").append(`<option value="${ResObj.SubTitel}">${ResObj.SubTitel}</option>`)
         })
-        $("#SSubject").change((e)=>{
-            if (e.currentTarget.value != ""){
-              $.get(`?BName=${$("#SBranch").val()}&Subject=${e.currentTarget.value}`,(result)=>{
-                $("#PaperCode option").not($("#PaperCode option")[0]).remove();
-                $(result).each((ResIndex,ResObj)=>{
-                    $("#PaperCode").append(`<option value="${ResObj}">${ResObj}</option>`)
-                })
-                $("#PaperCode").removeAttr("disabled")
+        $("#SSubject").val(`{{request.form["Subject"]}}`).removeAttr("disabled")
+
+        if ($("#SSubject").val() != "") {
+          $.get(`?BName=${$("#SBranch").val()}&Subject=${$("#SSubject").val()}`, (result) => {
+            $(result).each((ResIndex, ResObj) => {
+              $("#PaperCode").append(`<option value="${ResObj}">${ResObj}</option>`)
             })
-            }else{
-                $("#PaperCode").attr("disabled","disabled");
-                $("#PaperCode").val("");
-            }
-        });
-      
+            $("#PaperCode").val(`{{request.form["PaperCode"]}}`).removeAttr("disabled")
+          })
+        }
+      })
+    }
+
+    $("#SBranch").change((e) => {
+      $("#SSubject, #PaperCode").attr("disabled", "disabled");
+      $("#SSubject option").not($($("#SSubject option"))[0]).remove();
+      $("#PaperCode option").not($($("#PaperCode option"))[0]).remove();
+      if (e.currentTarget.value != "") {
+        $.get(`?Branch=${e.currentTarget.value}`, (result) => {
+          $(result).each((ResIndex, ResObj) => {
+            $("#SSubject").append(`<option value="${ResObj.SubTitel}">${ResObj.SubTitel}</option>`)
+            $("#SSubject").removeAttr("disabled")
+          })
+        })
+      }
+    })
+
+    $("#SSubject").change((e) => {
+      $("#PaperCode").attr("disabled", "disabled");
+      $("#PaperCode option").not($($("#PaperCode option"))[0]).remove();
+      $("#AddQuestion").hide();
+      $("#NewQuestionArea,.Qustions,.QustionsOpt,.QsSub").remove();
+      if (e.currentTarget.value != "") {
+        $.get(`?BName=${$("#SBranch").val()}&Subject=${e.currentTarget.value}`, (result) => {
+          $(result).each((ResIndex, ResObj) => {
+            $("#PaperCode").append(`<option value="${ResObj}">${ResObj}</option>`)
+          })
+          $("#PaperCode").removeAttr("disabled")
+        })
+      }
     });
-  </script>
-{% endblock %} 
+
+    $(".QsCheck").click((e) => {
+      let QsArr = [];
+      $(".QsCheck:checked").each((i, e) => QsArr.push(e.value))
+      $("#QsHidden").val(QsArr);
+    })
+  });
+</script>
+{% endblock %}

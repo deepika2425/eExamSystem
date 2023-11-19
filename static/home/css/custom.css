@@ -1,4 +1,19 @@
 
+*::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+*::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgb(0 0 0 / 42%);
+    border-radius: 0px;
+}
+*::-webkit-scrollbar-thumb {
+    background-color: #4b49ac;
+    border-radius: 0px;
+    height: 0.3rem;
+}
+
+
 .C_Icon{
     cursor: pointer;
     transition: 0.2s ease-in-out;
@@ -11,7 +26,7 @@
     background-color: transparent;
 }
 .C_Icon_Btn.Update{
-    color:green;
+    color:#0069f0;
 }
 .C_Icon_Btn.Delete{
     color:red;
@@ -72,4 +87,9 @@ select.form-control{
     float: right;
     text-align: right;
     padding-right: 5px;
+}
+
+.QsTbl{
+    overflow-y: auto;
+    max-height: 28rem;
 }

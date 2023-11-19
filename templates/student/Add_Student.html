@@ -21,8 +21,15 @@
                   <input type="email" class="form-control" name="semail" id="Email_Id" placeholder="Email Id" required>
                </div>
                <div class="col-md-4 col-sm-4 col-xs-4">
-                  <label for="User_Id">User Id</label>
-                  <input type="text" class="form-control" name="sid" id="User_Id" placeholder="User Id" required>
+                  <label for="Branch">Branch</label>
+                  <select class="form-control" name="branch" id="Branch" required>
+                    <option value="">Choose One</option>
+                    {% for item in Branchs %}
+                    <option value="{{item.Bname}}" {{'selected' if item.Bname==request.form["Branch"]}}>
+                      {{item.Bname}}
+                    </option>
+                    {% endfor %}
+                  </select>
                </div>
               </div>
             </div>

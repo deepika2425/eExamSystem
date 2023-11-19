@@ -15,10 +15,10 @@
             <div class="col-md-4 col-sm-4 col-xs-4">
               <label for="Branch_name">Branch Name</label>
               <select class="form-control" name="branchname" id="Branch_name" placeholder="Branch Name" required>
-                <option value="">Choose One</option>
+                <option>Choose One</option>
                 {% if BranchDt %}
                 {% for item in BranchDt %}
-                <option value="{{item.Bname}}">{{item.Bname}}</option>
+                <option value="{{item.Bname}}" {{'selected' if editId.Branch == item.Bname}}>{{item.Bname}}</option>
                 {% endfor %}
                 {% endif %}
               </select>
@@ -26,12 +26,12 @@
             <div class="col-md-4 col-sm-4 col-xs-4">
               <label for="Subject_name">Subject Name</label>
               <input type="text" class="form-control" name="subjectname" id="Subject_Name" placeholder="Subject Name"
-                required>
+                required value="{{editId.SubTitel}}">
             </div>
             <div class="col-md-4 col-sm-4 col-xs-4">
               <label for="Subject_Code">Subject Code</label>
               <input type="text" class="form-control" name="subjectcode" id="Subject_Code" placeholder="Subject Code"
-                required>
+                required value="{{editId.SubCode}}">
             </div>
           </div>
         </div>

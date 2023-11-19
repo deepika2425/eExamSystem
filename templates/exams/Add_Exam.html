@@ -7,91 +7,93 @@
 <form method="post">
     <div class="col-md-12 grid-margin stretch-card">
         <div class="card">
-          <div class="card-body">
-            <h4 class="card-title">Add Question</h4>
-              <div class="form-group">
-                <div class="row">
-                 <div class="col-md-4 col-sm-4 col-xs-4">
-                    <label for="SBranch">Select Branch</label>
-                    <select name="Branch" id="SBranch" class="form-control">
-                        <option value="0">Choose One</option>
-                            {% for item in BranDt %}
+            <div class="card-body">
+                <h4 class="card-title">Add Question</h4>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-4 col-xs-4">
+                            <label for="SBranch">Select Branch</label>
+                            <select name="Branch" id="SBranch" class="form-control">
+                                <option value="">Choose One</option>
+                                {% for item in BranDt %}
                                 <option value="{{item.Bname}}">{{item.Bname}}</option>
-                            {% endfor %}
-                    </select>
-                 </div>
-                 <div class="col-md-4 col-sm-4 col-xs-4">
-                    <label for="SSubject">Select Subject</label>
-                    <select name="Subject" id="SSubject" class="form-control" disabled>
-                        <option value="0">Choose One</option>
-                        {% for item in SubjectDb %}
-                        <option value="{{item.SubTitel}}">{{item.SubTitel}}</option>
-                        {% endfor %}
-                    </select>
-                 </div>
-                 <div class="col-md-4 col-sm-4 col-xs-4">
-                    <label for="QSP_Code">Question Paper Code</label>
-                    <input type="text" class="form-control" name="QSPCode" id="QSP_Code" placeholder="Question Paper Code" required disabled>
-                 </div>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-4">
+                            <label for="SSubject">Select Subject</label>
+                            <select name="Subject" id="SSubject" class="form-control" disabled>
+                                <option value="">Choose One</option>
+                                {% for item in SubjectDb %}
+                                <option value="{{item.SubTitel}}">{{item.SubTitel}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-4">
+                            <label for="QSP_Code">Question Paper Code</label>
+                            <input type="text" class="form-control" name="QSPCode" id="QSP_Code"
+                                placeholder="Question Paper Code" required disabled>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <div id="AddQuestion">
-                <div class="AQBtnArea text-right">
-                    <label class="mr-2">Add Question <em style="font-size: 12px;" class="ti-angle-right"></em></label>
-                    <button type="button" class="AQBtn"><em class="ti-plus"></em></button>
+                <div id="AddQuestion">
+                    <div class="AQBtnArea text-right">
+                        <label class="mr-2">Add Question <em style="font-size: 12px;"
+                                class="ti-angle-right"></em></label>
+                        <button type="button" class="AQBtn"><em class="ti-plus"></em></button>
+                    </div>
                 </div>
-             </div>
             </div>
-             
-             
-              <!-- <button type="submit" class="btn btn-primary mr-2">Submit</button> -->
-          </div>
-        </div>
-      </div>
-</form>
-{% endblock %} 
 
-{% block Scripts %} 
+
+            <!-- <button type="submit" class="btn btn-primary mr-2">Submit</button> -->
+        </div>
+    </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block Scripts %}
 <script>
-    $(document).ready(()=>{
-        $("#SBranch").change((e)=>{
-            if (e.currentTarget.value != ""){
-                $.get(`?Branch=${e.currentTarget.value}`,(result)=>{
+    $(document).ready(() => {
+        $("#SBranch").change((e) => {
+            if (e.currentTarget.value != "") {
+                $.get(`?Branch=${e.currentTarget.value}`, (result) => {
                     $("#SSubject option").not($("#SSubject option")[0]).remove();
-                    $(result).each((ResIndex,ResObj)=>{
+                    $(result).each((ResIndex, ResObj) => {
                         $("#SSubject").append(`<option value="${ResObj.SubTitel}">${ResObj.SubTitel}</option>`)
                         $("#SSubject").removeAttr("disabled")
 
                     })
                 })
-            }else{
-                $("#SSubject").attr("disabled","disabled");
+            } else {
+                $("#SSubject").attr("disabled", "disabled");
                 $("#SSubject option").not($("#SSubject option")[0]).remove();
-                $("#QSP_Code").attr("disabled","disabled");
+                $("#QSP_Code").attr("disabled", "disabled");
                 $("#QSP_Code").val("");
                 $("#AddQuestion").hide();
-                $("#NewQuestionArea,.Qustions,.QustionsOpt,.QsSub").remove() ;
+                $("#NewQuestionArea,.Qustions,.QustionsOpt,.QsSub").remove();
             }
         })
-        $("#SSubject").change((e)=>{
-            if (e.currentTarget.value != "0"){
-               $("#QSP_Code").removeAttr("disabled")
-            }else{
-                $("#QSP_Code").attr("disabled","disabled");
+        $("#SSubject").change((e) => {
+            if (e.currentTarget.value != "") {
+                $("#QSP_Code").removeAttr("disabled")
+            } else {
+                $("#QSP_Code").attr("disabled", "disabled");
                 $("#QSP_Code").val("");
                 $("#AddQuestion").hide()
-                $("#NewQuestionArea,.Qustions,.QustionsOpt,.QsSub").remove() ;
+                $("#NewQuestionArea,.Qustions,.QustionsOpt,.QsSub").remove();
             }
         });
-        $("#QSP_Code").keyup((event)=>{
+        $("#QSP_Code").keyup((event) => {
             event.currentTarget.value != "" ? $("#AddQuestion").show() : $("#AddQuestion").hide();
-            event.currentTarget.value == "" ? $("#NewQuestionArea,.Qustions,.QustionsOpt,.QsSub").remove() : "" ;
+            event.currentTarget.value == "" ? $("#NewQuestionArea,.Qustions,.QustionsOpt,.QsSub").remove() : "";
         })
-        $(".AQBtn").click(()=>{
-            if($(".card-body #NewQuestionArea").length > 0){
+        $(".AQBtn").click(() => {
+            if ($(".card-body #NewQuestionArea").length > 0) {
                 alert("Plz Submit Your Currrent Question")
             }
-            else{
+            else {
                 let QsOptHtml = `<div id="NewQuestionArea" class="form-group">
                                  <div class="QsOptArea row mb-2">
                                      <button type="button" class="SubjectiveBtn btn btn-primary ml-5">Subjective</button>
@@ -101,15 +103,24 @@
                               </div>`
                 $("#AddQuestion").after(QsOptHtml)
 
-                $(".ObjectiveBtn").click(()=>{
-                   
-                        $(".QuestionArea").remove();
-                    
-                        let QsHtml = `<div class="QuestionArea">
+                $(".ObjectiveBtn").click(() => {
+
+                    $(".QuestionArea").remove();
+
+                    let QsHtml = `<div class="QuestionArea">
                                      <div class="Qustions form-group">
                                         <div class="row">
                                           <div class="col-md-12 col-sm-12 col-xs-12">
-                                              <label for="MQs">Your Question</label>
+                                            <div class="row">
+                                                <label class="col-md-2 col-sm-2 col-xs-2" for="MQs">Your Question</label>
+                                                <label class="col-md-2 col-sm-2 col-xs-2" for="QsCategory">Question Category</label>
+                                                <select name="QsCategory" id="QsCategory" class="col-md-2 form-control p-1" required="" style="height: 2em;">
+                                                    <option value="">Choose One</option>
+                                                    <option value="HIG">High</option>
+                                                    <option value="MED">Medium</option>
+                                                    <option value="LOW">Low</option>
+                                                </select>
+                                              </div>
                                               <textarea class="form-control" name="Question" id="MQs" placeholder="Your Question" required style="width:100%;height: 100px;"></textarea>
                                            </div>
                                         </div>
@@ -145,18 +156,27 @@
                                         </div>
                                     </div>
                                 </div>`
-                        $("#NewQuestionArea").after(QsHtml)
-                
-                })
-                $(".SubjectiveBtn").click(()=>{
+                    $("#NewQuestionArea").after(QsHtml)
 
-                        $(".QuestionArea").remove();
-                   
-                        let QsHtml = `<div class="QuestionArea">
+                })
+                $(".SubjectiveBtn").click(() => {
+
+                    $(".QuestionArea").remove();
+
+                    let QsHtml = `<div class="QuestionArea">
                                        <div class="Qustions form-group">
                                         <div class="row">
                                           <div class="col-md-12 col-sm-12 col-xs-12">
-                                              <label for="MQs">Your Question</label>
+                                              <div class="row">
+                                                <label class="col-md-2 col-sm-2 col-xs-2" for="MQs">Your Question</label>
+                                                <label class="col-md-2 col-sm-2 col-xs-2" for="QsCategory">Question Category</label>
+                                                <select name="QsCategory" id="QsCategory" class="col-md-2 form-control p-1" required="" style="height: 2em;">
+                                                    <option value="">Choose One</option>
+                                                    <option value="HIG">High</option>
+                                                    <option value="MED">Medium</option>
+                                                    <option value="LOW">Low</option>
+                                                </select>
+                                              </div>
                                               <textarea class="form-control" name="Question" id="MQs" placeholder="Your Question" required style="width:100%;height: 100px;"></textarea>
                                            </div>
                                         </div>
@@ -168,27 +188,27 @@
                                         </div>
                                     </div>
                                 </div>`
-                        $("#NewQuestionArea").after(QsHtml)
-                    
+                    $("#NewQuestionArea").after(QsHtml)
+
                 })
             }
         })
     })
-    function QsFormSubmit(){
+    function QsFormSubmit() {
         let Page_IsValid = true;
-        $("#SBranch,#SSubject,#QSP_Code,#MQs,#Option_1,#Option_2,#Option_3,#Option_4").each((LIndex,LObj)=>{
-           if(LObj.value.trim() == "" ){
-             Page_IsValid = false
-             return Page_IsValid
-           }
+        $("#SBranch,#SSubject,#QSP_Code,#QsCategory,#MQs,#Option_1,#Option_2,#Option_3,#Option_4").each((LIndex, LObj) => {
+            if (LObj.value.trim() == "") {
+                Page_IsValid = false
+                return Page_IsValid
+            }
         })
-        if(Page_IsValid){
-            $.post(window.location.href,$("form").serialize(),(result)=>{
-                $(".Qustions,.QustionsOpt,.QsSub").remove() ;
+        if (Page_IsValid) {
+            $.post(window.location.href, $("form").serialize(), (result) => {
+                $(".Qustions,.QustionsOpt,.QsSub").remove();
             })
-        }else{
+        } else {
             alert('Plz fill all the field')
         }
     }
 </script>
-{% endblock %} 
+{% endblock %}

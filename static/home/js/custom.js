@@ -56,6 +56,12 @@ $('#myModal').on('shown.bs.modal', function (obj) {
     }
   };
 
+  async function ConfirmDelete(location){
+    if (await ConfirmDelet()){
+        window.location.href = location;
+    }
+  };
+
   function StartExam(){
     let NewExam = window.open('StartExam.html','NewExam',`width=${window.outerWidth},height=${window.outerHeight},scrollbars=yes,top="0", left="0"`)
     NewExam.document.write('Start Test')

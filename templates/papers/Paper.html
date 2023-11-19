@@ -1,0 +1,160 @@
+{% extends "MainLayout.html" %}
+
+{% block title %} Schedule Exam {% endblock %}
+{% block head %}
+
+<style>
+    .table td {
+        padding: 7px 1.375rem;
+    }
+
+    .StatusBtn {
+        padding: 10px !important;
+        font-size: 13px !important;
+        border-radius: 5px !important;
+    }
+</style>
+
+{% endblock %}
+
+{% block content%}
+{% if Message %}
+<label>{{Message}}</label>
+{% endif %}
+<form method="post">
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Schedule Exam</h4>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-4 col-xs-4">
+                            <label for="SBranch">Select Branch</label>
+                            <select name="Branch" id="SBranch" class="form-control">
+                                <option value="">Choose One</option>
+                                {% for item in Branchs %}
+                                <option value="{{item.Bname}}" {{'selected' if item.Bname==request.form["Branch"]}}>
+                                    {{item.Bname}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-4">
+                            <label for="SSubject">Select Subject</label>
+                            <select name="Subject" id="SSubject" class="form-control">
+                                <option value="">Choose One</option>
+                                {% for item in Subjects %}
+                                <option value="{{item.SubTitel}}" {{'selected' if
+                                    item.SubTitel==request.form["Subject"]}}>
+                                    {{item.SubTitel}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-4">
+                            <label for="SSubject">Paper Code</label>
+                            <select name="PaperCode" id="PaperCode" class="form-control">
+                                <option value="">Choose One</option>
+                                {% for item in QsCodes %}
+                                <option value="{{item.QSPCode}}" {{'selected' if
+                                    item.QSPCode==request.form["PaperCode"]}}>
+                                    {{item.QSPCode}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mb-0">
+                    <div class="SolidLn"></div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12 text-center">
+                            <input type="submit" value="Search" id="SearchExam" class="btn btn-behance" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" name="QsCheckDt" id="QsHidden" />
+
+    {% if Qsppr %}
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover NTable QsTbl">
+                        <thead>
+                            <tr>
+                                <th>Branch</th>
+                                <th>Subject</th>
+                                <th>Paper Code</th>
+                                <th>QuestionPaper Code</th>
+                                <th>Max Time</th>
+                                <th>QuestionPaper Status</th>
+                                <th>Question Count</th>
+                                <th>Created Date</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Attend Count</th>
+                                <th>Active Indicetor</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in Qsppr %}
+                            <tr>
+                                <td>{{item.Branch}}</td>
+                                <td>{{item.Subject}}</td>
+                                <td>{{item.PaperCode}}</td>
+                                <td>{{item.QsP_Code}}</td>
+                                <td>{{item.Max_Hour}}:{{item.Max_Min}}:{{item.Max_Sec}}</td>
+                                <td>
+                                    {% if item.Status == "Pending" %}
+                                    <button type="button" class="btn btn-primary StatusBtn"
+                                        onclick="ChangeStatus(`{{item._id}}`, 'P')">Start Exam</button>
+                                    {% elif item.Status == "Ongoing" %}
+                                    <button type="button" class="btn btn-danger StatusBtn"
+                                        onclick="ChangeStatus(`{{item._id}}`, 'O')">{{item.Status}}</button>
+                                    {% else %}
+                                    <button type="button" class="btn btn-success StatusBtn">{{item.Status}}</button>
+                                    {% endif %}
+                                </td>
+                                <td>{{item.QuestionList | length }}</td>
+                                <td>{{item.CreatedDate}}</td>
+                                <td>{{item.StartDate}}</td>
+                                <td>{{item.EndDate}}</td>
+                                <td>{{item.Active_Ind}}</td>
+                                <td>{{item.Attend | length}}</td>
+                                <td>
+                                    <a class="C_Icon_Btn Update" href="#">
+                                        <em class="ti-write C_Icon"></em>
+                                    </a>
+                                    |
+                                    <a onclick="ConfirmDelete('/papers/paper?DltId={{item._id}}')"
+                                        class="C_Icon_Btn Delete" href="#">
+                                        <em class="ti-trash C_Icon"></em>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</form>
+{% endblock %}
+
+{% block Scripts %}
+<script>
+    function ChangeStatus(id, code) {
+        $.get(`?QpId=${id}&Flag=${code}`, () => {
+            window.location.reload();
+        })
+    }
+</script>
+{% endblock %}

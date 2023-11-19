@@ -1,9 +1,12 @@
-from flask import Flask, request,render_template,redirect,session
+from flask import Flask, request,render_template,redirect,session,Response
 from pymongo import MongoClient
 import datetime
+from time import gmtime, strftime
 import os
 from werkzeug.utils import secure_filename
 from bson.objectid import ObjectId
+from camera import VideoCamera
+import cv2
 
 
 UPLOAD_FOLDER = 'static/uploads'
@@ -26,6 +29,7 @@ LeftMenuDb = db["LeftMenu"]
 BranchDb = db["Branches"]
 SubjectDb = db["Subjects"]
 QuestionDb = db["QuestionBank"]
+ExamPaperDb = db["ScheduleExam"]
 
 
 
@@ -34,7 +38,7 @@ def context_processor():
     FMdata = []
     SMdata = []
     TDt = datetime.datetime.now();
-    MDt = f"({TDt.strftime('%d')} {TDt.strftime('%b')} {TDt.strftime('%Y')})"
+    MDt = f"({TDt.strftime('%d %b %Y')})"
     if "userroll" in session :
        if  session["userroll"] == "Admin":
            AdMenu = LeftMenuDb.find()
@@ -54,7 +58,7 @@ def context_processor():
                     SMdata.append(item)
        else :
          AdMenu = LeftMenuDb.find()
-         FJson =['Setting',"Faculty List","Subjects","Papers","Student List","Add Subject","Add Exam","Add Notice","Schedule Exam","Branches"]
+         FJson =['Setting',"Faculty List","Subjects","Papers","Student List","Add Subject","Add Exam","Add Notice","Schedule Exam","Add questions","Branches"]
          for item in AdMenu :
              if item["PageTitel"] not in FJson :
                 if item["PageType"] == "First" :
@@ -66,14 +70,32 @@ def context_processor():
 def LogStatus() :
     return session["LogStatus"]
 
-def DateFormat(x):
-    fDate = f"{x.strftime('%d')}/{x.strftime('%m')}/{x.strftime('%Y')}"
+def DateFormat(x, t):
+    fDate = ""
+    if t :
+       fDate = x.strftime('%d/%m/%Y %H:%M:%S')
+    else :
+       fDate = x.strftime('%d/%m/%Y')
     return fDate
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+video_stream = VideoCamera()
+
+def gen(camera):
+    while True:
+        frame = camera.get_frame()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+
+
+
+@app.route('/video_feed', methods=['GET'])
+def video_feed():
+     return Response(gen(video_stream),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
  
 @app.route('/', methods=['GET','POST']) 
 def Index():
@@ -98,7 +120,7 @@ def Login():
            session["userid"] = UserData["user_id"]
            session["userroll"] = UserData["roll"]
            session["useremail"] = UserData["email"]
-           session["logtime"] = f"{datetime.datetime.utcnow()}"
+           session["logtime"] = f"{datetime.datetime.now()}"
            session["gender"] = UserData["gender"]
            session["image"] = f'uploads/{UserData["image"]}'
            return redirect("/home",code=302)
@@ -109,8 +131,9 @@ def Login():
 @app.route('/signup',  methods=['GET','POST'])
 def Signup():
     error = None
+    BranchLst = BranchDb.find()
     if request.method == 'POST':
-         user_id = request.form["userid"]
+         branch = request.form["branch"]
          email = request.form["email"]
          name = request.form["username"]
          roll = "Student"
@@ -121,15 +144,16 @@ def Signup():
             if image and allowed_file(image.filename):
                filename = secure_filename(image.filename)
               
-         if UserDb.find_one({"user_id": user_id}) :
-             error = 'User Id alredy exist'
+         if UserDb.find_one({"email": email}) :
+             error = 'Email Id alredy exist'
          else :
             post = {"name": name,
                    "email": email,
                    "password": password,
                    "roll": roll,
-                   "user_id": user_id,
-                   "date": datetime.datetime.utcnow(),
+                   "branch": branch,
+                   "user_id": f"STU{datetime.datetime.now().strftime('%f')}{email[0:2].upper()}",
+                   "date": datetime.datetime.now(),
                    "gender": gender,
                    "image": filename
                    }
@@ -137,7 +161,7 @@ def Signup():
             UserDb.insert_one(post)
             return redirect("/login", code=302)
           
-    return render_template("signup.html", error = error)
+    return render_template("signup.html", error = error, Branchs = BranchLst)
 
 @app.route('/home')
 def Home():
@@ -146,7 +170,6 @@ def Home():
         return render_template("home.html",name = session["username"])
       return redirect("logout")
      
-
 @app.route('/subject/subject',methods=['Get','POST'])
 def Subject():
     if request.method == 'GET':
@@ -160,30 +183,42 @@ def Subject():
       
     return redirect("/logout")
 
-
 @app.route('/subject/add_subject',methods=['GET','POST'])
 def AddSubject():
     error = None
     if request.method=='GET':
-        
-        BranchDt = BranchDb.find()
-        return render_template("/subject/add_subject.html",BranchDt = BranchDt)
+        if LogStatus():
+           EditId = request.args.get("editId")
+           editId = SubjectDb.find_one({"_id": ObjectId(EditId)})
+           BranchDt = BranchDb.find()
+           return render_template("/subject/add_subject.html",BranchDt = BranchDt, editId = editId)
+        return redirect("/logout")
     if request.method == 'POST':
-       branchName = request.form["branchname"]
-       subjectName = request.form["subjectname"]
-       subjectCode = request.form["subjectcode"]
-       if SubjectDb.find_one({"subTitel" : subjectName}) :
-           error = 'Subject already exist'
-          
+       Uid = request.args.get('editId')
+       if(Uid):
+            updateVal = {
+                "_id" : ObjectId(Uid),
+                "SubTitel" : request.form["subjectname"],
+                "SubCode" : request.form["subjectcode"],
+                "Branch" : request.form["branchname"]
+                }
+            OldData =  SubjectDb.find_one({"_id" : ObjectId(Uid)})
+            SubjectDb.update_one(OldData,{"$set":updateVal})
        else :
-            postDt = {"SubTitel" : subjectName,
-                   "SubCode" : subjectCode,
-                   "Branch" :branchName,
-                   }   
-            SubjectDb.insert_one(postDt)
+                 branchName = request.form["branchname"]
+                 subjectName = request.form["subjectname"]
+                 subjectCode = request.form["subjectcode"]
+                 if SubjectDb.find_one({"subTitel" : subjectName}) :
+                     error = 'Subject already exist'
+                    
+                 else :
+                      postDt = {
+                             "SubTitel" : subjectName,
+                             "SubCode" : subjectCode,
+                             "Branch" :branchName,
+                             }   
+                      SubjectDb.insert_one(postDt)
        return redirect("/subject/subject", code=302)  
-
-
 
 @app.route('/branch/add_branch',methods=['GET','POST'])
 def AddBranch():
@@ -223,14 +258,12 @@ def AddBranch():
                            "Bcode" : Branch_code,
                            "Cname" : College,
                            "Ccode" : College_code,
-                           "Date"  : datetime.datetime.utcnow(),
+                           "Date"  : datetime.datetime.now(),
                         }    
                      BranchDb.insert_one(postDt)
        
        return redirect("/branch/branch", code=302)  
            
-    
-
 @app.route('/branch/branch', methods = ['GET'])
 def Branch():
     if request.method =='GET':
@@ -239,12 +272,10 @@ def Branch():
          if LogStatus():
             BranchData = []
             for item in BranchDb.find():
-                item['Date'] = DateFormat(item['Date'])
+                item['Date'] = DateFormat(item['Date'], False)
                 BranchData.append(item)
             return render_template("/branch/branch.html",BranchData=BranchData)    
-
-
-    
+ 
 @app.route('/student/students', methods = ['GET'])
 def Students():
     if request.method == 'GET':
@@ -253,22 +284,22 @@ def Students():
        if LogStatus():
           StuData = []
           for item in UserDb.find({"roll":"Student"}):
-             item['date'] = DateFormat(item['date'])
+             item['date'] = DateFormat(item['date'], False)
              StuData.append(item)
           return render_template("/student/students.html",StudentJson =StuData)  
       
     return redirect("/logout")
 
-
 @app.route('/student/add_student', methods = ['GET','POST'])
 def AddStudent():
     error = None
+    BranchLst = BranchDb.find()
     if request.method == 'GET':
        if LogStatus():
-          return render_template("/student/add_student.html")
+          return render_template("/student/add_student.html", Branchs = BranchLst)
        return redirect("/logout")
     if request.method == 'POST':
-       user_id = request.form["sid"]
+       Branch = request.form["branch"]
        email = request.form["semail"]
        name = request.form["sname"]
        roll = "Student"
@@ -279,22 +310,22 @@ def AddStudent():
            image = request.files["simage"]
            if image and allowed_file(image.filename):
               filename = secure_filename(image.filename)
-       if UserDb.find_one({"user_id" : user_id}) :
-           error = 'User Id already exist'
+       if UserDb.find_one({"email" : email}) :
+           error = 'Email Id already exist'
           
        else :
             postDt = {"name" : name,
                    "email" : email,
                    "password" :password,
                    "roll" : roll,
-                   "user_id" :user_id,
-                   "date" : datetime.datetime.utcnow(),
+                   "user_id" : f"STU{datetime.datetime.now().strftime('%f')}{email[0:2].upper()}",
+                   "branch" :Branch,
+                   "date" : datetime.datetime.now(),
                    "gender" :gender,
                    "image" :filename
                    }
             
-            image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))     
-            print(postDt)     
+            image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))         
             UserDb.insert_one(postDt)
        return redirect("/student/students", code=302) 
 
@@ -304,7 +335,7 @@ def Pages():
         if LogStatus() :
           LFMdata = []
           for menu in LeftMenuDb.find() :
-              menu['date'] = DateFormat(menu['date'])
+              menu['date'] = DateFormat(menu['date'], False)
               LFMdata.append(menu)
           return render_template("/setting/pages.html", MenuJson = LFMdata)
         return redirect("/logout")
@@ -335,7 +366,7 @@ def AddPages():
                 "PageStatus": PageStatus,
                 "PageUrl": PageUrl,
                 "PageType": "First",
-                "date": datetime.datetime.utcnow()
+                "date": datetime.datetime.now()
                }
        LeftMenuDb.insert_one(Pages)
        return redirect("/setting/pages",code=302) 
@@ -348,7 +379,7 @@ def SubPage():
           LmSubData = []
           for menu in LeftMenuDb.find() :
              if 'ParentPage' in menu and menu['ParentPage'] == ParentPage :
-                menu['date'] = DateFormat(menu['date'])
+                menu['date'] = DateFormat(menu['date'], False)
                 LmSubData.append(menu)
           return render_template("/setting/sub_page.html", SubMenuJson = LmSubData,PaPage = ParentPage)
         return redirect("/logout")
@@ -383,7 +414,7 @@ def AddSubPages():
                 "PageStatus": PageStatus,
                 "PageUrl": PageUrl,
                 "PageType": "Second",
-                "date": datetime.datetime.utcnow()
+                "date": datetime.datetime.now()
                }
        LeftMenuDb.insert_one(Pages)
        return redirect(f"/setting/sub_page?parent_page={request.args.get('parent_page')}",code=302) 
@@ -431,7 +462,7 @@ def Faculty():
         if LogStatus() :
           FacData = []
           for item in UserDb.find({"roll": "Faculty"}) :
-              item['date'] = DateFormat(item['date'])
+              item['date'] = DateFormat(item['date'], False)
               FacData.append(item)
           return render_template("/faculty/faculty.html", FacultyJson = FacData)
         return redirect("/logout")
@@ -463,7 +494,7 @@ def AddFaculty():
                    "password": password,
                    "roll": roll,
                    "user_id": user_id,
-                   "date": datetime.datetime.utcnow(),
+                   "date": datetime.datetime.now(),
                    "gender": gender,
                    "image": filename
                    }
@@ -476,11 +507,44 @@ def Exam():
     error = None
     if request.method == 'GET':
         if LogStatus() :
-           return render_template("/exams/exam.html") 
+            if request.args.get("Flag") == "A":
+                OldQplst = ExamPaperDb.find_one({'_id' : ObjectId(request.args.get("QpId"))})
+                msg = ExamPaperDb.update_one(OldQplst,{"$set": {
+                    f"Attend.{session['userid']}" : {
+                        "User_Id" : session['userid'],
+                        "StartTime": datetime.datetime.now(),
+                        "EndTime" : None ,
+                        "AttendQsList" : [],
+                        "Proctored_img" : []
+                    }
+                    }})
+                return Response(f"/exams/new_exam/{request.args.get('QpId')}")
+            UsBranch = UserDb.find_one({"user_id" : session["userid"]})["branch"]
+            ExamPapers = ExamPaperDb.find()
+            ExamPapersArr = []
+            for item in ExamPapers :
+                if item['Branch'] == UsBranch :
+                   item['CreatedDate'] = DateFormat(item['CreatedDate'], False)
+                   if item['StartDate'] != "" :  item['StartDate'] = DateFormat(item['StartDate'], True)
+                   if item['EndDate'] != "" :  item['EndDate'] = DateFormat(item['EndDate'], True)
+                   ExamPapersArr.append(item)
+            return render_template("/exams/exam.html", Qsppr = ExamPapersArr) 
         return redirect("/logout")
     if request.method == 'POST':
          
-            return redirect("/exams/exam", code=302)     
+        return render_template("/exams/exam.html")      
+
+@app.route('/exams/new_exam/<QpId>', methods=['GET','POST'])
+def NewExam(QpId):
+    print(QpId)
+    error = None
+    if request.method == 'GET':
+        if LogStatus() :
+           return render_template("/exams/startexam.html") 
+        return redirect("/logout")
+    if request.method == 'POST':
+         
+        return render_template("/exams/startexam.html")      
 
 @app.route('/exams/add_exam', methods=['GET','POST'])
 def AddExam():
@@ -503,17 +567,22 @@ def AddExam():
        ESubject = request.form["Subject"]
        EQSPCode = request.form["QSPCode"]
        EQsType= request.form["QsType"]
+       EQsCategory= request.form["QsCategory"]
        EQuestion = request.form["Question"]
        EOption1 = request.form["Option1"] if "Option1" in request.form else None
        EOption2 = request.form["Option2"] if "Option2" in request.form else None
        EOption3 = request.form["Option3"] if "Option3" in request.form else None
        EOption4 = request.form["Option4"] if "Option4" in request.form else None
        EQsAnswar = request.form["QsAnswar"] if "QsAnswar" in request.form else None
+       EQSCode = f"{EQSPCode}{datetime.datetime.now().strftime('%f')}"
        EQustion = {
+           "CreatedDate" : datetime.datetime.now(),
            "Branch" :  EBranch,
            "Subject" : ESubject,
            "QSPCode" : EQSPCode,
+           "QSCode" : EQSCode,
            "QsType" :  EQsType,
+           "QsCategory" :  EQsCategory,
            "Question" :EQuestion,
            "Option1" : EOption1,
            "Option2" : EOption2,
@@ -526,12 +595,15 @@ def AddExam():
 
 @app.route('/exams/schedule_exam', methods=['GET','POST'])
 def ScheduleExam():
-    error = None
+    SuccessMsg = None
     BranchDt = BranchDb.find()
     if request.method == 'GET':
         if LogStatus() :
+           if "DltId" in request.args:
+            QuestionDb.delete_one({"_id": ObjectId(request.args.get("DltId"))})
+            SuccessMsg = "Question Deleted !!!"
+            
            Branch = request.args.get("Branch")
-          
            if Branch != None and Branch != "":
               FSubjects = SubjectDb.find({"Branch" : Branch})
               SubjectDt = []
@@ -546,27 +618,103 @@ def ScheduleExam():
               Qspapers = QuestionDb.find({"Branch" : BName, "Subject" : Subject})
               QSPCodeArr = []
               for item in Qspapers :
-                  print(item)
                   if QSPCodeArr.count(item["QSPCode"]) == 0 :
                      QSPCodeArr.append(item["QSPCode"])
               return QSPCodeArr
-           return render_template("/exams/schedule_exam.html",BranDt = BranchDt) 
+           return render_template("/exams/schedule_exam.html",BranDt = BranchDt, SuccessMsg = SuccessMsg) 
         return redirect("/logout")
     if request.method == 'POST':
         ScBranch = request.form["Branch"]
         ScSubject = request.form["Subject"]
         ScPaperCode = request.form["PaperCode"]
-        if ScPaperCode == None or ScPaperCode == "" :
-            Qspapers = QuestionDb.find({"Branch" : ScBranch, "Subject" : ScSubject})
-            QSPCodeArr = []
-            print(Qspapers) 
-            for item in Qspapers :
-                  if QSPCodeArr.count(item["QSPCode"]) == 0 :
-                     QSPCodeArr.append(item["QSPCode"])    
-          
-
+        QsCheckList = request.form["QsCheckDt"]
+        if(QsCheckList != "" ):
+            QsListDt = {
+              "Branch" : ScBranch,
+              "Subject" :ScSubject,
+              "PaperCode" : ScPaperCode,
+              "QuestionList" : QsCheckList.split(","),
+              "CreatedDate" : datetime.datetime.now(),
+              "StartDate"  : "",
+              "EndDate"  : "",
+              "Active_Ind"  :  0,
+              "Status" : "Pending",
+              "QsP_Code" : f"{ScBranch[0 : 2]}{datetime.datetime.now().strftime('%f')}{ScSubject[0 : 2]}",
+              "Attend" : {},
+              "Max_Hour" : request.form["MHour"],
+              "Max_Min" : request.form["MMinute"],
+              "Max_Sec" : request.form["MSecond"]
+             }
+            ExamPaperDb.insert_one(QsListDt)
+            return redirect("/papers/paper",code=302)
+        if ScPaperCode != None or ScBranch != None or ScSubject != None:
+            QsJson = QuestionDb.find({"Branch" : ScBranch, "Subject" : ScSubject, "QSPCode" : ScPaperCode })
+            QsJsonArr = []
+            for item in QsJson :
+              item['CreatedDate'] = DateFormat(item['CreatedDate'], False)
+              QsJsonArr.append(item)
+            print(QsJsonArr)
+            return render_template("/exams/schedule_exam.html", BranDt = BranchDt, QsJson = QsJsonArr)  
         return render_template("/exams/schedule_exam.html", BranDt = BranchDt)     
     
+@app.route("/papers/paper",methods=['GET','POST'])
+def papers():
+    SuccessMsg = None
+    BranchList = BranchDb.find()
+    SubjectList = SubjectDb.find()
+    QsCodeList = QuestionDb.find()
+    QsCodetArr = []
+    for code in QsCodeList : 
+        if {"QSPCode" : code["QSPCode"]} not in QsCodetArr :  QsCodetArr.append({"QSPCode" : code["QSPCode"]})
+     
+    if request.method == 'GET':
+       if LogStatus() :
+            if "DltId" in request.args:
+                ExamPaperDb.delete_one({"_id": ObjectId(request.args.get("DltId"))})
+                SuccessMsg = "QuestionPaper Deleted !!!"
+
+            QspId = request.args.get("QpId")
+            Flag = request.args.get("Flag")
+            if Flag == "P" : 
+                OldQpDt = ExamPaperDb.find_one({"_id" : ObjectId(QspId)})
+                ExamPaperDb.update_one(OldQpDt,{"$set": {"Status" : "Ongoing","StartDate": datetime.datetime.now()}})
+            if Flag == "O" : 
+                OldQpDt = ExamPaperDb.find_one({"_id" : ObjectId(QspId)})
+                ExamPaperDb.update_one(OldQpDt,{"$set": {"Status" : "Success","EndDate": datetime.datetime.now()}})
+
+
+            ExamPapers = ExamPaperDb.find()
+            ExamPapersArr = []
+            for item in ExamPapers :
+                item['CreatedDate'] = DateFormat(item['CreatedDate'], False)
+                if item['StartDate'] != "" :  item['StartDate'] = DateFormat(item['StartDate'], True)
+                if item['EndDate'] != "" :  item['EndDate'] = DateFormat(item['EndDate'], True)
+                ExamPapersArr.append(item)
+
+            return render_template("/papers/paper.html", Qsppr = ExamPapersArr,
+                 Message = SuccessMsg, Branchs = BranchList, Subjects = SubjectList, QsCodes = QsCodetArr)
+       return redirect("/logout")
+    if request.method == 'POST':
+        Branch = request.form["Branch"]
+        Subject = request.form["Subject"]
+        PaperCode = request.form["PaperCode"]
+        Query = {}
+        if Branch : Query["Branch"] = Branch
+        if Subject : Query["Subject"] = Subject
+        if PaperCode : Query["PaperCode"] = PaperCode
+        if Branch or Subject or PaperCode : 
+            ExamPapers = ExamPaperDb.find(Query)
+        else : 
+            ExamPapers = ExamPaperDb.find()
+        ExamPapersArr = []
+        for item in ExamPapers :
+            item['CreatedDate'] = DateFormat(item['CreatedDate'], False)
+            if item['StartDate'] != "" :  item['StartDate'] = DateFormat(item['StartDate'], True)
+            if item['EndDate'] != "" :  item['EndDate'] = DateFormat(item['EndDate'], True)
+            ExamPapersArr.append(item)
+        return render_template("/papers/paper.html", Qsppr = ExamPapersArr,
+                           Branchs = BranchList, Subjects = SubjectList, QsCodes = QsCodetArr)
+
 @app.route("/editfac",methods=['GET','POST'])
 def Edit():
     if request.method=='GET':
@@ -588,7 +736,6 @@ def Edit():
        OldData = UserDb.find_one({"_id": ObjectId(id)})
        UserDb.update_one(OldData,{"$set":updateVal})
        return redirect("/faculty/faculty", code=302)
-
 
 @app.route("/updatestu",methods=['GET','POST'])
 def Update():
