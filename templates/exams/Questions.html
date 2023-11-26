@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questions - eExamSystem</title>
+
+    <style>
+        .QsDiv{
+            min-height: 10em;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+        }
+
+        .optiongroup{
+            margin: 0 0 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="QsForm">
+        <form method="post" id="QSForm">
+            <div class="QsDiv"> {{ExQs.Question}}</div>
+            <div class="AnsDiv">
+                <div class="options">
+                    <div class="optiongroup">
+                        <span>A)</span>
+                        <input class="OptionRed" type="radio" name="QnOptions" id="OptionsA">
+                        <label class="OptionLbl" for="OptionsA">{{ExQs.Option1}}</label>
+                    </div>
+                    <div class="optiongroup">
+                        <span>B)</span>
+                        <input class="OptionRed" type="radio" name="QnOptions" id="OptionsB">
+                        <label class="OptionLbl" for="OptionsB">{{ExQs.Option2}}</label>
+                    </div>
+                    <div class="optiongroup">   
+                        <span>C)</span>
+                        <input class="OptionRed" type="radio" name="QnOptions" id="OptionsC">
+                        <label class="OptionLbl" for="OptionsC">{{ExQs.Option3}}</label>
+                    </div>
+                    <div class="optiongroup">
+                        <span>D)</span>
+                        <input class="OptionRed" type="radio" name="QnOptions" id="OptionsD">
+                        <label class="OptionLbl" for="OptionsD">{{ExQs.Option4}}</label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </section>
+</body>
+
+</html>

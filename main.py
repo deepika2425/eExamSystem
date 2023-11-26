@@ -68,7 +68,7 @@ def context_processor():
     return dict(FLeftDt = FMdata, SLeftDt = SMdata, MDt = MDt)
 
 def LogStatus() :
-    return session["LogStatus"]
+    return  session["LogStatus"] if session["LogStatus"] else False
 
 def DateFormat(x, t):
     fDate = ""
@@ -536,15 +536,37 @@ def Exam():
 
 @app.route('/exams/new_exam/<QpId>', methods=['GET','POST'])
 def NewExam(QpId):
-    print(QpId)
     error = None
     if request.method == 'GET':
         if LogStatus() :
-           return render_template("/exams/startexam.html") 
+           ExPpr = ExamPaperDb.find_one({"_id" : ObjectId(QpId)})
+           return render_template("/exams/startexam.html",ExPpr = ExPpr) 
         return redirect("/logout")
     if request.method == 'POST':
          
         return render_template("/exams/startexam.html")      
+    
+@app.route('/exams/questions/<QsId>', methods=['GET','POST'])
+def GetQuestion(QsId):
+    error = None
+    if request.method == 'GET':
+        if LogStatus() :
+           ExQs = QuestionDb.find_one({"QSCode" : QsId})
+           return render_template("/exams/questions.html",ExQs = ExQs) 
+        return redirect("/logout")
+    
+    if request.method == 'POST':
+        ExQs = ExamPaperDb.find_one({"_id" : ObjectId(QsId)})
+        return render_template("/exams/questions.html",ExQs = ExQs)
+
+@app.route('/endexam', methods=['GET','POST'])
+def EndExam():
+    error = None
+    if request.method == 'GET':
+        if LogStatus() :
+            video_stream.__del__()
+            return None
+        return redirect("/logout")
 
 @app.route('/exams/add_exam', methods=['GET','POST'])
 def AddExam():
@@ -637,7 +659,7 @@ def ScheduleExam():
               "CreatedDate" : datetime.datetime.now(),
               "StartDate"  : "",
               "EndDate"  : "",
-              "Active_Ind"  :  0,
+              "Active_Ind"  :  1,
               "Status" : "Pending",
               "QsP_Code" : f"{ScBranch[0 : 2]}{datetime.datetime.now().strftime('%f')}{ScSubject[0 : 2]}",
               "Attend" : {},
@@ -653,7 +675,6 @@ def ScheduleExam():
             for item in QsJson :
               item['CreatedDate'] = DateFormat(item['CreatedDate'], False)
               QsJsonArr.append(item)
-            print(QsJsonArr)
             return render_template("/exams/schedule_exam.html", BranDt = BranchDt, QsJson = QsJsonArr)  
         return render_template("/exams/schedule_exam.html", BranDt = BranchDt)     
     

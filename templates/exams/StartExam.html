@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>New Exam - eExamSystem</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{url_for('static', filename='home/feather/feather.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='home/ti-icons/css/themify-icons.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='home/css/vendor.bundle.base.css')}}">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{{url_for('static', filename='home/datatables.net-bs4/dataTables.bootstrap4.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='home/ti-icons/css/themify-icons.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='home/css/select.dataTables.min.css')}}">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{{url_for('static', filename='home/vertical-layout-light/style.css')}}">
+    <!-- endinject -->
+    <!-- custom:css -->
+    <link rel="stylesheet" href="{{url_for('static', filename='NewExam/Nexam.css')}}" type="text/css">
+    <!-- custom -->
+    <link rel="shortcut icon" href="{{url_for('static', filename='home/images/eexam.png')}}" type="image/x-icon">
+</head>
+
+<body>
+    {% if ExPpr %}
+    <section class="container-scroller">
+        <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+                <a class="navbar-brand brand-logo" href="/home"><img
+                        src="{{url_for('static', filename='home/images/eexam.png')}}" class="mr-2" alt="logo" />eExam
+                    System</a>
+                <a class="navbar-brand brand-logo-mini" href="/home"><img
+                        src="{{url_for('static', filename='home/images/eexam.png')}}" alt="logo" /></a>
+            </div>
+            <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+                <!-- <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                    <span class="icon-menu"></span>
+                </button>
+                <ul class="navbar-nav mr-lg-2">
+                    <li class="nav-item nav-search d-none d-lg-block">
+                        <div class="input-group">
+                            <div class="input-group-prepend hover-cursor" id="navbar-search-icon">
+                                <span class="input-group-text" id="search">
+                                    <i class="icon-search"></i>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control" id="navbar-search-input" placeholder="Search now"
+                                aria-label="search" aria-describedby="search">
+                        </div>
+                    </li>
+                </ul> -->
+                <ul class="navbar-nav navbar-nav-right">
+                    <li class="dropdown nav-item">
+                        <div class="flex-md-grow-1 flex-xl-grow-0">
+                            <div class="bg-white btn-light btn-sm" id="MenuDate">
+                                Today <span id="MenuDateSpan">{{MDt}}</span>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item nav-profile dropdown">
+                        <div class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
+                            {% if session['image'] %}
+                            <img src='{{url_for("static", filename = session["image"]) }}' alt="profile" />
+                            {% else %}
+                            <img src='{{url_for("static", filename = "home/images/profile.png") }}' alt="profile" />
+                            {% endif %}
+                        </div>
+                    </li>
+                </ul>
+                <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+                    data-toggle="offcanvas">
+                    <span class="icon-menu"></span>
+                </button>
+            </div>
+        </nav>
+
+        <div class="Content_Wrapper">
+            <div class="leftArea">
+                <div class="Ehead Lhead justify-content-center">
+                    <h4 class="m-0">Controll Section</h4>
+                </div>
+                <div class="proctarSec">
+                    <img class="PrVideo" src="/video_feed" alt="eExamSystem" srcset="">
+                </div>
+                <div class="SolidLn"></div>
+                <div class="ChangeQsSec">
+                    <div class="InfoSec">
+                        <button class="QsBtn Not_Visited" type="button">1</button>
+                        <label class="QsBtnLbl">Not Visited</label>
+                        <button class="QsBtn Not_Answered" type="button">10</button>
+                        <label class="QsBtnLbl">Not Answered</label>
+                        <button class="QsBtn Answered" type="button">22</button>
+                        <label class="QsBtnLbl">Answered</label>
+                    </div>
+                    <div class="QsBtnScroll">
+                        <div class="QsbtnSec">
+                            {% for item in ExPpr.QuestionList %}
+                            <button class="QsBtn {{'Not_Answered Active' if loop.index == 1 else 'Not_Visited'}}" type="button"
+                                onclick="RanderPage('{{item}}')" aria-label="{{loop.index}}">{{loop.index}}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="rightArea">
+                <div class="Ehead Rhead">
+                    <div class="HLCard">
+                        <div class="HLCTop">
+                            <label for="" class="HLClbl HLCHlbl font-weight-bold">Name :</label>
+                            <label for="" class="HLClbl">{{session['username']}}</label>
+                        </div>
+                        <div class="HLCBottom">
+                            <label for="" class="HLClbl HLCHlbl font-weight-bold"> ID :</label>
+                            <label for="" class="HLClbl">{{session['userid']}}</label>
+                        </div>
+                    </div>
+                    <div class="HLCard">
+                        <div class="HLCTop">
+                            <label for="" class="HLClbl HLCHlbl font-weight-bold">Branch :</label>
+                            <label for="" class="HLClbl">{{ExPpr.Branch}}</label>
+                        </div>
+                        <div class="HLCBottom">
+                            <label for="" class="HLClbl HLCHlbl font-weight-bold">Subject :</label>
+                            <label for="" class="HLClbl">{{ExPpr.Subject}}</label>
+                        </div>
+                    </div>
+                    <div class="HRCard">
+                        <div class="TimeLeft">
+                            <label class="TLlbl">Time Left :</label>
+                            <div class="TimeBlock">
+                                <div class="THour">
+                                    <span id="THourCount">00</span>
+                                    <span>Hour</span>
+                                </div>
+                                <div class="TMin">
+                                    <span id="TMinCount">00</span>
+                                    <span>Min</span>
+                                </div>
+                                <div class="TSec">
+                                    <span id="TSecCount">00</span>
+                                    <span>Sec</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="EBody">
+                <div class="QsScreenSec">
+                    <iframe src="" frameborder="0" id="QsScreen"></iframe>
+                </div>
+                <div class="NavigationBtn">
+                    <div class="nxtbtn">
+                    <button type="button" class="NvBtn" id="Previous">Previous</button>
+                    <button type="button" class="NvBtn" id="Save_Previous">Save & Previous</button>
+                </div>
+                    <button type="button" class="NvBtn" id="Submit">Submit</button>
+                    <div class="prvbtn">
+                    <button type="button" class="NvBtn" id="Save_Next">Save & Next</button>
+                    <button type="button" class="NvBtn" id="Next">Next</button>
+                </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- plugins:js -->
+    <script src="{{url_for('static', filename='home/js/jquery-3.6.1.min.js')}}"></script>
+    <script src="{{url_for('static', filename='home/js/vendor.bundle.base.js')}}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <script src="{{url_for('static', filename='home/chart.js/Chart.min.js')}}"></script>
+    <script src="{{url_for('static', filename='home/datatables.net/jquery.dataTables.js')}}"></script>
+    <script src="{{url_for('static', filename='home/datatables.net-bs4/dataTables.bootstrap4.js')}}"></script>
+    <script src="{{url_for('static', filename='home/js/dataTables.select.min.js')}}"></script>
+
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{{url_for('static', filename='home/js/off-canvas.js')}}"></script>
+    <script src="{{url_for('static', filename='home/js/hoverable-collapse.js')}}"></script>
+    <script src="{{url_for('static', filename='home/js/template.js')}}"></script>
+    <script src="{{url_for('static', filename='home/js/settings.js')}}"></script>
+    <script src="{{url_for('static', filename='home/js/todolist.js')}}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page-->
+    <script src="{{url_for('static', filename='home/js/dashboard.js')}}"></script>
+    <script src="{{url_for('static', filename='home/js/Chart.roundedBarCharts.js')}}"></script>
+    <script src="{{url_for('static', filename='home/js/custom.js')}}"></script>
+    <!-- End custom js for this page-->
+
+    <script type="text/javascript" src="{{url_for('static', filename='NewExam/Nexam.js')}}"></script>
+    <script type="text/javascript">
+        $(document).ready(()=>{
+            TimeLeft(`{{ExPpr.Max_Hour}}`,`{{ExPpr.Max_Min}}`,`{{ExPpr.Max_Sec}}`)
+            RanderPage("{{ExPpr.QuestionList[0]}}")
+        })
+    </script>
+    {% else %}
+    <div class="Nodt">
+        <h3>No Data Found</h3>
+    </div>
+    {% endif %}
+
+
+
+</body>
+
+</html>

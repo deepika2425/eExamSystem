@@ -1,0 +1,246 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+*::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+*::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgb(0 0 0 / 42%);
+    border-radius: 0px;
+}
+*::-webkit-scrollbar-thumb {
+    background-color: #4b49ac;
+    border-radius: 0px;
+    height: 0.3rem;
+}
+
+body {
+    background: #F5F7FF;
+}
+
+.SolidLn {
+    border-bottom: 1px solid darkgrey;
+    margin: 10px 0;
+}
+
+.Nodt {
+    position: absolute;
+    top: 50%;
+    bottom: 50%;
+    left: 50%;
+    right: 50%;
+    width: 11em;
+    transform: translate(-50%);
+}
+
+.container-scroller {
+    height: 100vh;
+}
+
+.Content_Wrapper {
+    height: 90%;
+    margin: 4em 0 0 0;
+    padding: 1em;
+    display: flex;
+}
+
+.leftArea {
+    width: 20%;
+    height: 100%;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0px 5px 21px -5px #CDD1E1;
+    padding: 0 5px;
+}
+
+.rightArea {
+    width: 80%;
+    height: 100%;
+    margin-left: 1em;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0px 5px 21px -5px #CDD1E1;
+    padding: 0 10px;
+}
+
+.Ehead {
+    height: 3em;
+    background-color: #36448f;
+    border-radius: 20px 20px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+    margin-bottom: 1em;
+    justify-content: space-around;
+}
+
+.proctarSec {
+    height: 10em;
+    display: flex;
+    justify-content: center;
+}
+
+.PrVideo {
+    height: 100%;
+    width: fit-content;
+}
+
+.QsbtnSec {
+    display: table;
+}
+
+.QsBtn {
+    border: none;
+    width: 25px;
+    margin: 0 10px 10px 2px;
+    box-shadow: 0 0 5px 0px #8a8a8ab8;
+    border-radius: 5px;
+    padding: 1px;
+}
+
+.QsBtnScroll{
+    overflow: auto;
+    width: 100%;
+    height: 10em;
+    padding: 3px 0;
+}
+
+.InfoSec {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    background-color: #ebeef8;
+    padding: 5px 4px 5px 0;
+}
+
+.InfoSec .QsBtn {
+    pointer-events: none;
+    margin: 0 5px 0 3px;
+}
+
+label.QsBtnLbl {
+    font-size: 10px;
+    color: #36448f;
+}
+
+button:disabled{
+    opacity: 0.5;
+}
+
+.QsBtn.Active {
+    background-color: #36448f !important;
+}
+
+.QsBtn.Not_Visited {
+    background-color: #f0f0f0;
+    color: #36448f;
+}
+
+.QsBtn.Not_Answered {
+    background-color: #cf5959;
+    color: #fff;
+}
+
+.QsBtn.Answered {
+    background-color: #00c100;
+        color: #fff;
+}
+
+.HLCard{
+    margin: 0 20px 0 5px;
+    width: 15em;
+}
+
+.HLCHlbl {
+    width: 25%;
+}
+    label.HLClbl {
+    margin: 0;
+    font-size: 13px;
+}
+
+.HRCard{
+    width: 50%;
+}
+
+.TimeLeft{
+    width: 50%;
+    float: right;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* background-color: #5160b1; */
+    border-radius: 20px;
+    padding: 0 5px;
+    box-shadow: 0 0 5px 0px #aeb4eb;
+}
+
+.TLlbl{
+    margin: 0;
+}
+.TimeBlock{
+    width: 60%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.TimeBlock .THour, .TimeBlock .TMin, .TimeBlock .TSec{
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    justify-content: center;
+    align-items: center;
+}
+
+.EBody{
+    height: 85%;
+}
+
+.QsScreenSec{
+    height: 90%;
+}
+
+#QsScreen{
+    border-bottom: 1px solid #36448f;
+    border-top: 1px solid #36448f;
+    height: 100%;
+    width: 100%;
+}
+
+.NavigationBtn{
+    height: 10%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+button.NvBtn {
+    border: none;
+    outline: none;
+    background-color: #7676ff;
+    color: #fff;
+    padding: 7px;
+    border-radius: 5px;
+    min-width: 5em;
+}
+
+#Previous, #Save_Previous{
+    background-color: darkcyan;
+    color: #fff;
+}
+
+#Save_Next, #Next{
+    background-color: darkslateblue;
+    color: #fff;
+}
+
+#Submit{
+    background-color: #4caf50;
+    color: #fff;
+}
