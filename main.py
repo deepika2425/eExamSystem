@@ -7,15 +7,25 @@ from werkzeug.utils import secure_filename
 from bson.objectid import ObjectId
 from camera import VideoCamera
 import cv2
+from flask_mail import Mail, Message
 
 
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
+
 app.config["SECRET_KEY"] = "a1nbskdgksdgak697auskkdbakjfa8s7f08ajsfbjabsfljf08a7f0asfal"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 *1024
+
+app.config['MAIL_SERVER']='smtp.googlemail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USERNAME'] = 'eexam.sys2023@gmail.com'
+app.config['MAIL_PASSWORD'] = 'vtmx lfpv xexm uyfr'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+mail = Mail(app)
 
 try:
    client = MongoClient("mongodb+srv://eExamSystem:8yUZvK6Z95HNOeJs@eexam-system.f07qvqu.mongodb.net/test")
@@ -42,20 +52,22 @@ def context_processor():
     if "userroll" in session :
        if  session["userroll"] == "Admin":
            AdMenu = LeftMenuDb.find()
+           FJson =["Exam","Reports"]
            for item in AdMenu :
-               if item["PageType"] == "First" :
-                    FMdata.append(item)
-               if item["PageType"] == "Second" :
-                    SMdata.append(item)
+               if item["PageTitel"] not in FJson :
+                    if item["PageType"] == "First" :
+                         FMdata.append(item)
+                    if item["PageType"] == "Second" :
+                         SMdata.append(item)
        elif  session["userroll"] == "Faculty":
              AdMenu = LeftMenuDb.find()
-             FJson =['Setting',"Faculty List","Subjects","Papers","Exam","Student List","Branches"]
+             FJson =['Setting',"Faculty List","Subjects","Papers","Exam","Student List","Branches","Reports"]
              for item in AdMenu :
                 if item["PageTitel"] not in FJson :
                    if item["PageType"] == "First" :
-                    FMdata.append(item)
+                         FMdata.append(item)
                    if item["PageType"] == "Second" :
-                    SMdata.append(item)
+                        SMdata.append(item)
        else :
          AdMenu = LeftMenuDb.find()
          FJson =['Setting',"Faculty List","Subjects","Papers","Student List","Add Subject","Add Exam","Add Notice","Schedule Exam","Add questions","Branches"]
@@ -94,12 +106,17 @@ def gen(camera):
 
 @app.route('/video_feed', methods=['GET'])
 def video_feed():
-     return Response(gen(video_stream),
+    if request.args.get("Flag") == "EndExam":
+        video_stream.__del__()
+        return ""
+    else:
+       video_stream.__init__()
+       return Response(gen(video_stream),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
- 
+
 @app.route('/', methods=['GET','POST']) 
 def Index():
-     return redirect("/login", code=302)
+    return redirect("/login", code=302)
  
 @app.route('/logout', methods=['GET','POST']) 
 def Logout():
@@ -139,6 +156,7 @@ def Signup():
          roll = "Student"
          password = request.form["password"]
          gender = request.form["gender"]
+         UserId = f"STU{datetime.datetime.now().strftime('%f')}{email[0:2].upper()}"
          if 'file' in request.files:
             image = request.files["file"]
             if image and allowed_file(image.filename):
@@ -152,13 +170,24 @@ def Signup():
                    "password": password,
                    "roll": roll,
                    "branch": branch,
-                   "user_id": f"STU{datetime.datetime.now().strftime('%f')}{email[0:2].upper()}",
+                   "user_id": UserId,
                    "date": datetime.datetime.now(),
                    "gender": gender,
-                   "image": filename
+                   "image": filename,
+                   "AttendExams" : {}
                    }
             image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))      
             UserDb.insert_one(post)
+            try :
+                msg = Message(subject='eExam system Account info',
+                              sender='noreplay@gmail.com',
+                              recipients=[email],
+                              cc=['eexam.sys2023@gmail.com'])
+                msg.html = f"Hey {name}, </br> Your User ID : {UserId}"
+                mail.send(msg)
+                error = 'Your UserID send to your email id '
+            except :
+                error = 'some error we fatch'
             return redirect("/login", code=302)
           
     return render_template("signup.html", error = error, Branchs = BranchLst)
@@ -475,31 +504,42 @@ def AddFaculty():
            return render_template("/faculty/add_faculty.html") 
         return redirect("/logout")
     if request.method == 'POST':
-         user_id = request.form["fid"]
          email = request.form["femail"]
          name = request.form["fname"]
          roll = "Faculty"
          password = request.form["fpassword"]
          gender = request.form["fgender"]
+         FacId = f"FAC{datetime.datetime.now().strftime('%f')}{email[0:2].upper()}"
          if 'fimage' in request.files:
             image = request.files["fimage"]
             if image and allowed_file(image.filename):
                filename = secure_filename(image.filename)
               
-         if UserDb.find_one({"user_id": user_id}) :
+         if UserDb.find_one({"user_id": FacId}) :
              error = 'User Id alredy exist'
          else :
             post = {"name": name,
                    "email": email,
                    "password": password,
                    "roll": roll,
-                   "user_id": user_id,
+                   "user_id": FacId,
                    "date": datetime.datetime.now(),
                    "gender": gender,
                    "image": filename
                    }
             image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))      
             UserDb.insert_one(post)
+
+            try :
+                msg = Message(subject='eExam system Account info',
+                              sender='noreplay@gmail.com',
+                              recipients=[email],
+                              cc=['eexam.sys2023@gmail.com'])
+                msg.html = f"Hey {name}, <br><br/> Your User ID : {FacId}"
+                mail.send(msg)
+                error = 'Your UserID send to your email id '
+            except :
+                error = 'some error we fatch'
             return redirect("/faculty/faculty", code=302)     
 
 @app.route('/exams/exam', methods=['GET','POST'])
@@ -514,7 +554,7 @@ def Exam():
                         "User_Id" : session['userid'],
                         "StartTime": datetime.datetime.now(),
                         "EndTime" : None ,
-                        "AttendQsList" : [],
+                        "AttendQsList" : {},
                         "Proctored_img" : []
                     }
                     }})
@@ -522,13 +562,16 @@ def Exam():
             UsBranch = UserDb.find_one({"user_id" : session["userid"]})["branch"]
             ExamPapers = ExamPaperDb.find()
             ExamPapersArr = []
+            Userdt = UserDb.find_one({"user_id" : session["userid"]})
+            AttendQs = Userdt["AttendExams"]
             for item in ExamPapers :
                 if item['Branch'] == UsBranch :
                    item['CreatedDate'] = DateFormat(item['CreatedDate'], False)
                    if item['StartDate'] != "" :  item['StartDate'] = DateFormat(item['StartDate'], True)
                    if item['EndDate'] != "" :  item['EndDate'] = DateFormat(item['EndDate'], True)
                    ExamPapersArr.append(item)
-            return render_template("/exams/exam.html", Qsppr = ExamPapersArr) 
+                   
+            return render_template("/exams/exam.html", Qsppr = ExamPapersArr, AttendQs = AttendQs) 
         return redirect("/logout")
     if request.method == 'POST':
          
@@ -539,34 +582,48 @@ def NewExam(QpId):
     error = None
     if request.method == 'GET':
         if LogStatus() :
+           old_Userdt = UserDb.find_one({"user_id" : session["userid"]})
+           UserDb.update_one(old_Userdt,{"$set": {f"AttendExams.{QpId}": {"StartTime" : datetime.datetime.now()}}})
            ExPpr = ExamPaperDb.find_one({"_id" : ObjectId(QpId)})
-           return render_template("/exams/startexam.html",ExPpr = ExPpr) 
+           return render_template("/exams/startexam.html",ExPpr = ExPpr, QpId = QpId ) 
         return redirect("/logout")
-    if request.method == 'POST':
-         
-        return render_template("/exams/startexam.html")      
     
+    if request.method == 'POST':
+        Name = session['username'].split(" ")[0]
+        return render_template("ThankYou.html", Name = Name)   
+    
+@app.route('/exams/UpdateAns', methods=['GET','POST'])
+def UpdateAns():
+    error = None
+    if request.method == 'POST':
+        QspCode = request.form["QspCode"]
+        QSCode = request.form["QSCode"]
+        QSscreenVal = request.form["QSscreenVal"]
+
+        OldQplst = ExamPaperDb.find_one({'_id' : ObjectId(QspCode)})
+        msg = ExamPaperDb.update_one(OldQplst,{"$set": {
+            f"Attend.{session['userid']}.AttendQsList.{QSCode}" : { "Ans":QSscreenVal}}})
+        return {"Update" : "sucess","QspCode" : QspCode, "QSCode" :QSCode}
+
 @app.route('/exams/questions/<QsId>', methods=['GET','POST'])
 def GetQuestion(QsId):
     error = None
     if request.method == 'GET':
-        if LogStatus() :
-           ExQs = QuestionDb.find_one({"QSCode" : QsId})
-           return render_template("/exams/questions.html",ExQs = ExQs) 
-        return redirect("/logout")
+        QspCode = request.args.get("QspCode")
+        ExQs = QuestionDb.find_one({"QSCode" : QsId})
+        if QspCode :
+            ExPpr = ExamPaperDb.find_one({"_id" : ObjectId(QspCode)})
+            try:
+                ExQs["UserAns"] = ExPpr['Attend'][session['userid']]['AttendQsList'][QsId]['Ans']
+            except:
+                ExQs["UserAns"] = None  
+        
+        return render_template("/exams/questions.html",ExQs = ExQs) 
     
     if request.method == 'POST':
+        
         ExQs = ExamPaperDb.find_one({"_id" : ObjectId(QsId)})
         return render_template("/exams/questions.html",ExQs = ExQs)
-
-@app.route('/endexam', methods=['GET','POST'])
-def EndExam():
-    error = None
-    if request.method == 'GET':
-        if LogStatus() :
-            video_stream.__del__()
-            return None
-        return redirect("/logout")
 
 @app.route('/exams/add_exam', methods=['GET','POST'])
 def AddExam():
@@ -780,7 +837,20 @@ def Update():
        UserDb.update_one(OldData,{"$set":updateVal})
        return redirect("/student/students", code=302)
 
-
+@app.route("/reports",methods=['GET','POST'])
+def Reports():
+    if request.method=='GET':
+        Userdt = UserDb.find_one({"user_id" : session["userid"]})
+        AttendQs = list(Userdt["AttendExams"].keys())
+        AttendQsLst = []
+        for item in AttendQs :
+          AttendQsLst.append(QuestionDb.find_one({"_id" : ObjectId(item)}))
+        return render_template("/reports/report.html", AttendQsLst = AttendQsLst)
+    
+    if request.method=='POST':
+        return render_template("/reports/report.html")
+       
+      
 
 
 

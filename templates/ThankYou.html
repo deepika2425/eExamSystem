@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You! - eExamSystem</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: aliceblue;
+            color: #2C3E50;
+        }
+
+        .container {
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            animation: scale 1s ease-in-out, fadeIn 1s ease-in-out;
+        }
+
+        h1 {
+            margin-top: 10px;
+            font-size: 2em;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scale {
+            0% {
+                transform: scale(0);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://source.unsplash.com/7oP8Q3QJ6tE/100x100" alt="Study Icon">
+        <h1>Thank You! {{Name}} for attend the exam .</h1>
+        <p>Please go to <a href="/reports">Reports Section</a> to see the result.</p>
+    </div>
+</body>
+</html>

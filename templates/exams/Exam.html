@@ -43,19 +43,19 @@
                         </thead>
                         <tbody>
                             {% for item in Qsppr %}
-                            {% if item.Status == "Ongoing" %}
-                            <tr>
-                                <td>{{item.Branch}}</td>
-                                <td>{{item.Subject}}</td>
-                                <td>{{item.QsP_Code}}</td>
-                                <td><button type="button" class="btn btn-primary StatusBtn"
-                                        onclick="StartExam(`{{item._id}}`)">Start Exam</button>
-                                </td>
-                                <td>{{item.QuestionList | length }}</td>
-                                <td>{{item.Max_Hour}}:{{item.Max_Min}}:{{item.Max_Sec}}</td>
-                                <td>{{item.StartDate}}</td>
-                            </tr>
-                            {% endif %}
+                              {% if item.Status == "Ongoing" %}
+                                   <tr>
+                                      <td>{{item.Branch}}</td>
+                                      <td>{{item.Subject}}</td>
+                                      <td>{{item.QsP_Code}}</td>
+                                      <td><button type="button" class="btn btn-primary StatusBtn"
+                                              onclick="StartExam(`{{item._id}}`)">Start Exam</button>
+                                      </td>
+                                      <td>{{item.QuestionList | length }}</td>
+                                      <td>{{item.Max_Hour}}:{{item.Max_Min}}:{{item.Max_Sec}}</td>
+                                      <td>{{item.StartDate}}</td>
+                                  </tr>
+                              {% endif %}
                             {% endfor %}
                         </tbody>
                     </table>

@@ -7,17 +7,24 @@
     <title>Questions - eExamSystem</title>
 
     <style>
-        .QsDiv{
+        .QsDiv {
             min-height: 10em;
         }
+
         .options {
             display: flex;
             flex-direction: column;
             justify-content: start;
         }
 
-        .optiongroup{
+        .optiongroup {
             margin: 0 0 5px 0;
+        }
+
+        #QnOptionsobj {
+            width: 99%;
+            height: 20em;
+            outline: none;
         }
     </style>
 </head>
@@ -27,31 +34,52 @@
         <form method="post" id="QSForm">
             <div class="QsDiv"> {{ExQs.Question}}</div>
             <div class="AnsDiv">
+                <input type="hidden" name="QsType" value="{{ExQs.QsType}}">
+                <input type="hidden" name="QSCode" value="{{ExQs.QSCode}}">
+                <input type="hidden" name="IsAnswered" value="{{ExQs.UserAns|length if ExQs.UserAns}}">
+                {% if ExQs.QsType =="Subjective" %}
                 <div class="options">
                     <div class="optiongroup">
                         <span>A)</span>
-                        <input class="OptionRed" type="radio" name="QnOptions" id="OptionsA">
+                        <input class="OptionRed" type="radio" name="QnOptions" id="OptionsA" value="{{ExQs.Option1}}">
                         <label class="OptionLbl" for="OptionsA">{{ExQs.Option1}}</label>
                     </div>
                     <div class="optiongroup">
                         <span>B)</span>
-                        <input class="OptionRed" type="radio" name="QnOptions" id="OptionsB">
+                        <input class="OptionRed" type="radio" name="QnOptions" id="OptionsB" value="{{ExQs.Option2}}">
                         <label class="OptionLbl" for="OptionsB">{{ExQs.Option2}}</label>
                     </div>
-                    <div class="optiongroup">   
+                    <div class="optiongroup">
                         <span>C)</span>
-                        <input class="OptionRed" type="radio" name="QnOptions" id="OptionsC">
+                        <input class="OptionRed" type="radio" name="QnOptions" id="OptionsC" value="{{ExQs.Option3}}">
                         <label class="OptionLbl" for="OptionsC">{{ExQs.Option3}}</label>
                     </div>
                     <div class="optiongroup">
                         <span>D)</span>
-                        <input class="OptionRed" type="radio" name="QnOptions" id="OptionsD">
+                        <input class="OptionRed" type="radio" name="QnOptions" id="OptionsD" value="{{ExQs.Option4}}">
                         <label class="OptionLbl" for="OptionsD">{{ExQs.Option4}}</label>
                     </div>
                 </div>
+                {% else %}
+                <div class="objans">
+                    <textarea name="QnOptions" id="QnOptionsobj"></textarea>
+                </div>
+                {% endif %}
+
             </div>
         </form>
     </section>
+
+    <script src="{{url_for('static', filename='home/js/jquery-3.6.1.min.js')}}"></script>
+    <script type="text/javascript">
+        if ("{{ExQs.UserAns}}") {
+            if ("{{ExQs.QsType}}" == "Subjective") {
+                $(".OptionRed[value={{ExQs.UserAns}}]").prop("checked", true)
+            } else {
+                $("#QnOptionsobj").text(ExQs.UserAns)
+            }
+        }
+    </script>
 </body>
 
 </html>

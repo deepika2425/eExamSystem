@@ -1,64 +1,106 @@
 
-// window.onbeforeunload = function(){
-//     return 'Are you sure you want to leave?';
-//   };
-
-//   window.onunload = function() {
-//     alert('Bye.');
-// }
-
-// window.onbeforeunload = function() {
-//     if (isDirty) {
-//       return 'There is unsaved data.';
-//     }
-//     return undefined;
-//   }
-
-function goodbye(e) {
-    if (!e) e = window.event;
-    //e.cancelBubble is supported by IE - this will kill the bubbling process.
-    e.cancelBubble = true;
-    e.returnValue = 'You sure you want to leave?'; //This is displayed on the dialog
-
-    //e.stopPropagation works in Firefox.
-    if (e.stopPropagation) {
-        e.stopPropagation();
-        e.preventDefault();
-    }
-    $.get("/endexam");
-}
-window.onbeforeunload = goodbye;
-
+let BtnName = ""
 $(document).ready(() => {
     $(".QsBtn.Active").attr("aria-label") == "1" ? $("#Previous, #Save_Previous").prop("disabled", true) : $("#Previous, #Save_Previous").prop("disabled", false);
-
+    $("#SaveN, #SaveP").hide();
     $(".QsBtn").click((e) => {
-        $(e.currentTarget).attr("aria-label") == "1" ?
-            $("#Previous, #Save_Previous").prop("disabled", true) : $("#Previous, #Save_Previous").prop("disabled", false);
-        $(e.currentTarget).attr("aria-label") == $(".QsbtnSec .QsBtn").length ?
-            $("#Next, #Save_Next").prop("disabled", true) : $("#Next, #Save_Next").prop("disabled", false);
-        $(".QsBtn.Active").removeClass("Active")
-        $(e.currentTarget).removeClass("Not_Visited").addClass("Not_Answered Active")
+        if ($(e.currentTarget).attr("aria-label") == "1") {
+            $("#Previous").prop("disabled", true)
+            $("#Save_Previous").hide()
+            $("#SaveP").show()
+        } else {
+            $("#Previous").prop("disabled", false)
+            $("#Save_Previous").prop("disabled", false).show()
+            $("#SaveP").hide()
+        };
+
+        if ($(e.currentTarget).attr("aria-label") == $(".QsbtnSec .QsBtn").length) {
+            $("#Next").prop("disabled", true)
+            $("#Save_Next").hide()
+            $("#SaveN").show()
+        } else {
+            $("#Next").prop("disabled", false)
+            $("#Save_Next").show()
+            $("#SaveN").hide()
+        }
+
     })
 
     $("#Previous").click((e) => {
-        `${$(`.QsBtn[aria-label = ${Number($(".QsBtn.Active").attr("aria-label")) - 1}]`).click()}`
+        BtnName = "Previous"
+        $(`.QsBtn[aria-label = ${Number($(".QsBtn.Active").attr("aria-label")) - 1}]`).click()
     })
 
-    $("#Save_Previous").click((e) => {
-        `${$(`.QsBtn[aria-label = ${Number($(".QsBtn.Active").attr("aria-label")) - 1}]`).click()}`
+    $("#Save_Previous, #SaveP").click((e) => {
+        BtnName = "Save"
+        let QSscreen = $("#QsScreen")[0].contentDocument
+        const QsType = $(QSscreen).find("[name=QsType]").val()
+        const QSCode = $(QSscreen).find("[name=QSCode]").val()
+        const QspCode = $("[name=QspCode]").val()
+        if (QsType == "Subjective") {
+            const Opval = $(QSscreen.forms[0]).find(".OptionRed:checked")
+            const QSscreenVal = Opval.length > 0 ? Opval.val() : null;
+            const data = {
+                QspCode: QspCode,
+                QSCode: QSCode,
+                QSscreenVal: QSscreenVal
+            }
+            $.post('/exams/UpdateAns', data, (res) => {
+                if (res.Update == "sucess") {
+                    $(`.QsBtn[aria-label = ${Number($(".QsBtn.Active").attr("aria-label")) - 1}]`).click()
+                }
+            })
+        } else {
+            const Opval = $(QSscreen.forms[0]).find("#QnOptionsobj").text()
+            const QSscreenVal = Opval.length > 0 ? Opval.val() : null;
+            const data = {
+                QspCode: QspCode,
+                QSCode: QSCode,
+                QSscreenVal: QSscreenVal
+            }
+            $.post(window.location.href, data, (res) => {
+                debugger;
+            })
+        }
+
     })
 
-    $("#Submit").click((e) => {
-
-    })
-
-    $("#Save_Next").click((e) => {
-        `${$(`.QsBtn[aria-label = ${Number($(".QsBtn.Active").attr("aria-label")) + 1}]`).click()}`
+    $("#Save_Next, #SaveN").click((e) => {
+        BtnName = "Save"
+        let QSscreen = $("#QsScreen")[0].contentDocument
+        const QsType = $(QSscreen).find("[name=QsType]").val()
+        const QSCode = $(QSscreen).find("[name=QSCode]").val()
+        const QspCode = $("[name=QspCode]").val()
+        if (QsType == "Subjective") {
+            const Opval = $(QSscreen.forms[0]).find(".OptionRed:checked")
+            const QSscreenVal = Opval.length > 0 ? Opval.val() : null;
+            const data = {
+                QspCode: QspCode,
+                QSCode: QSCode,
+                QSscreenVal: QSscreenVal
+            }
+            $.post('/exams/UpdateAns', data, (res) => {
+                if (res.Update == "sucess") {
+                    $(`.QsBtn[aria-label = ${Number($(".QsBtn.Active").attr("aria-label")) + 1}]`).click()
+                }
+            })
+        } else {
+            const Opval = $(QSscreen.forms[0]).find("#QnOptionsobj").text()
+            const QSscreenVal = Opval.length > 0 ? Opval.val() : null;
+            const data = {
+                QspCode: QspCode,
+                QSCode: QSCode,
+                QSscreenVal: QSscreenVal
+            }
+            $.post(window.location.href, data, (res) => {
+                debugger;
+            })
+        }
     })
 
     $("#Next").click((e) => {
-        `${$(`.QsBtn[aria-label = ${Number($(".QsBtn.Active").attr("aria-label")) + 1}]`).click()}`
+        BtnName = "Next"
+        $(`.QsBtn[aria-label = ${Number($(".QsBtn.Active").attr("aria-label")) + 1}]`).click()
     })
 })
 
@@ -73,7 +115,7 @@ function TimeLeft(H, M, S) {
         SetExTime(nd);
         if (nd.getHours() == 0o0 && nd.getMinutes() == 0o0 && nd.getSeconds() == 0o0) {
             clearInterval(Tl)
-            alert("Times Up !!!!")
+            $("form").submit();
         }
     }, 1000)
 }
@@ -84,7 +126,22 @@ function SetExTime(t) {
     $("#TSecCount").text(t.getSeconds() < 10 ? `0${t.getSeconds()}` : t.getSeconds())
 }
 
-function RanderPage(pId) {
-    $("#QsScreen").attr("src", `/exams/questions/${pId}`)
+function RanderPage(o, pId) {
+    let QSscreen = $("#QsScreen")[0].contentDocument
+
+    if ($(QSscreen).find("[name=IsAnswered]").length > 0) {
+        if ($(QSscreen).find("[name=IsAnswered]").val().length > 0 || BtnName == "Save") {
+            $(".QsBtn.Active").removeClass("Not_Answered Active").addClass("Answered")
+            $(o).removeClass("Not_Visited").addClass("Not_Answered Active")
+        } else {
+            $(".QsBtn.Active").removeClass("Active")
+            $(o).removeClass("Not_Visited").addClass("Not_Answered Active")
+        }
+    }
+    const QspCode = $("[name=QspCode]").val()
+    $("#QsScreen").attr("src", `/exams/questions/${pId}?QspCode=${QspCode}`)
+
 }
+
+
 

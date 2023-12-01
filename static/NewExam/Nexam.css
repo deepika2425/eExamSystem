@@ -230,12 +230,12 @@ button.NvBtn {
     min-width: 5em;
 }
 
-#Previous, #Save_Previous{
+#Previous, #Save_Previous, #SaveP{
     background-color: darkcyan;
     color: #fff;
 }
 
-#Save_Next, #Next{
+#Save_Next, #Next, #SaveN{
     background-color: darkslateblue;
     color: #fff;
 }

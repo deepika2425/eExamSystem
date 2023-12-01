@@ -26,6 +26,7 @@
 </head>
 
 <body>
+    <form method="post">
     {% if ExPpr %}
     <section class="container-scroller">
         <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -100,8 +101,9 @@
                     <div class="QsBtnScroll">
                         <div class="QsbtnSec">
                             {% for item in ExPpr.QuestionList %}
-                            <button class="QsBtn {{'Not_Answered Active' if loop.index == 1 else 'Not_Visited'}}" type="button"
-                                onclick="RanderPage('{{item}}')" aria-label="{{loop.index}}">{{loop.index}}</button>
+                            <button class="QsBtn {{'Not_Answered Active' if loop.index == 1 else 'Not_Visited'}}"
+                                type="button" onclick="RanderPage(this,'{{item}}')"
+                                aria-label="{{loop.index}}">{{loop.index}}</button>
                             {% endfor %}
                         </div>
                     </div>
@@ -151,25 +153,28 @@
 
                 </div>
                 <div class="EBody">
-                <div class="QsScreenSec">
-                    <iframe src="" frameborder="0" id="QsScreen"></iframe>
-                </div>
-                <div class="NavigationBtn">
-                    <div class="nxtbtn">
-                    <button type="button" class="NvBtn" id="Previous">Previous</button>
-                    <button type="button" class="NvBtn" id="Save_Previous">Save & Previous</button>
-                </div>
-                    <button type="button" class="NvBtn" id="Submit">Submit</button>
-                    <div class="prvbtn">
-                    <button type="button" class="NvBtn" id="Save_Next">Save & Next</button>
-                    <button type="button" class="NvBtn" id="Next">Next</button>
-                </div>
-                </div>
+                    <div class="QsScreenSec">
+                        <input type="hidden" name="QspCode" value="{{QpId}}">
+                        <iframe src="" frameborder="0" id="QsScreen"></iframe>
+                    </div>
+                    <div class="NavigationBtn">
+                        <div class="nxtbtn">
+                            <button type="button" class="NvBtn" id="Previous">Previous</button>
+                            <button type="button" class="NvBtn" id="Save_Previous">Save & Previous</button>
+                            <button type="button" class="NvBtn" id="SaveP">Save</button>
+                        </div>
+                        <button type="submit" class="NvBtn" id="Submit">Submit</button>
+                        <div class="prvbtn">
+                            <button type="button" class="NvBtn" id="Save_Next">Save & Next</button>
+                            <button type="button" class="NvBtn" id="SaveN">Save</button>
+                            <button type="button" class="NvBtn" id="Next">Next</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
-
+</form>
 
     <!-- plugins:js -->
     <script src="{{url_for('static', filename='home/js/jquery-3.6.1.min.js')}}"></script>
@@ -197,9 +202,10 @@
 
     <script type="text/javascript" src="{{url_for('static', filename='NewExam/Nexam.js')}}"></script>
     <script type="text/javascript">
-        $(document).ready(()=>{
-            TimeLeft(`{{ExPpr.Max_Hour}}`,`{{ExPpr.Max_Min}}`,`{{ExPpr.Max_Sec}}`)
-            RanderPage("{{ExPpr.QuestionList[0]}}")
+        $(document).ready(() => {
+            TimeLeft(`{{ExPpr.Max_Hour}}`, `{{ExPpr.Max_Min}}`, `{{ExPpr.Max_Sec}}`)
+            // RanderPage("{{ExPpr.QuestionList[0]}}")
+            $(".QsBtn.Active").click();
         })
     </script>
     {% else %}
